@@ -1,4 +1,4 @@
-from Model import Grid
+from Code.Model import Grid
 
 
 class Controller:

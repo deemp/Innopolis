@@ -2,8 +2,8 @@ import pyqtgraph as qtg
 from PyQt5.QtWidgets import QPushButton, QMainWindow, QWidget, QTabWidget, QVBoxLayout, \
     QLineEdit, QHBoxLayout, QFormLayout, QCheckBox
 
-from Controller import Controller
-from Model import MyFunction, Grid
+from Code.Controller import Controller
+from Code.Model import MyFunction
 
 
 class App(QMainWindow):
