@@ -3,14 +3,13 @@ import pandas as pd
 
 
 class Function:
-    def calculate(self, xs):
+    def method(self, *args):
         pass
 
-
-class My(Function):
+class MyFunction(Function):
     @staticmethod
     def F(x):
-        x0, y0 = My.x0, My.y0
+        x0, y0 = MyFunction.x0, MyFunction.y0
         C = np.exp(-y0 / x0) - x0
         return -x * np.log(x + C)
 
@@ -18,10 +17,9 @@ class My(Function):
     def f(x, y):
         return y / x - x * np.exp(y / x)
 
-    @staticmethod
-    def exact(n, h):
+    def method(self, n, h):
         ys = np.empty(n)
-        x0, F = My.x0, My.F
+        x0, F = MyFunction.x0, MyFunction.F
         for i in range(0, n):
             ys[i] = F(x0 + h * i)
 
@@ -32,46 +30,46 @@ class My(Function):
 
     @staticmethod
     def update(x0, y0):
-        My.x0, My.y0 = x0, y0
+        MyFunction.x0, MyFunction.y0 = x0, y0
 
 
-class NumericalMethods:
+class NumericalMethod(Function):
     def nxt(self, xi, yi, h):
         return yi
 
     def method(self, n, h):
-        ys = np.full(n, My.y0)
+        ys = np.full(n, MyFunction.y0)
         for i in range(0, n - 1):
-            ys[i + 1] = self.nxt(My.x0 + h * i, ys[i], h)
+            ys[i + 1] = self.nxt(MyFunction.x0 + h * i, ys[i], h)
 
         return ys
 
     def lte(self, n, h):
         lte = np.zeros(n)
         for i in range(0, n - 1):
-            xi = My.x0 + h * i
-            lte[i + 1] = np.abs(self.nxt(xi, My.F(xi), h) - My.F(xi + h))
+            xi = MyFunction.x0 + h * i
+            lte[i + 1] = np.abs(self.nxt(xi, MyFunction.F(xi), h) - MyFunction.F(xi + h))
 
         return lte
 
 
-class Euler(NumericalMethods):
+class Euler(NumericalMethod):
     def nxt(self, xi, yi, h):
-        return yi + h * My.f(xi, yi)
+        return yi + h * MyFunction.f(xi, yi)
 
 
-class ImprovedEuler(NumericalMethods):
+class ImprovedEuler(NumericalMethod):
     def nxt(self, xi, yi, h):
-        y = yi + h * My.f(xi, yi)
-        return yi + h / 2 * (My.f(xi, yi) + My.f(xi + h, y))
+        y = yi + h * MyFunction.f(xi, yi)
+        return yi + h / 2 * (MyFunction.f(xi, yi) + MyFunction.f(xi + h, y))
 
 
-class RungeKutta(NumericalMethods):
+class RungeKutta(NumericalMethod):
     def nxt(self, xi, yi, h):
-        k1 = My.f(xi, yi)
-        k2 = My.f(xi + h / 2, yi + h / 2 * k1)
-        k3 = My.f(xi + h / 2, yi + h / 2 * k2)
-        k4 = My.f(xi + h, yi + h * k3)
+        k1 = MyFunction.f(xi, yi)
+        k2 = MyFunction.f(xi + h / 2, yi + h / 2 * k1)
+        k3 = MyFunction.f(xi + h / 2, yi + h / 2 * k2)
+        k4 = MyFunction.f(xi + h, yi + h * k3)
         return yi + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
@@ -82,14 +80,12 @@ class Grid:
 
         # ============ putting definitions ============
         x0, X, y0 = float(x0), float(X), float(y0)
-        My.update(x0, y0)
+        MyFunction.update(x0, y0)
 
         n = N + 1
         h = (X - x0) / N
 
-        f = My().f
-        F = My().F
-        exact_values = My().exact
+        exact_values = MyFunction().method
 
         em = Euler().method
         em_lte = Euler().lte
@@ -139,5 +135,5 @@ class Grid:
 
         # ++++++++++++ gathering ++++++++++++
         tab2 = pd.DataFrame({'ns': ns, 'em_gte': gte[0], 'iem_gte': gte[1], 'rk_gte': gte[2]})
-        print(tab2)
+        # print(tab2)
         return (tab1, tab2)

@@ -1,10 +1,9 @@
-import sys
-
 import pyqtgraph as qtg
 from PyQt5.QtWidgets import QPushButton, QMainWindow, QWidget, QTabWidget, QVBoxLayout, \
     QLineEdit, QHBoxLayout, QFormLayout, QCheckBox
 
-from Model import Grid, My
+from Controller import Controller
+from Model import MyFunction, Grid
 
 
 class App(QMainWindow):
@@ -24,18 +23,6 @@ class App(QMainWindow):
 
         self.show()
 
-# class Tab(QWidget):
-#     def __init__(self, parent):
-#         super().__init__(parent)
-#
-#         # create tabs
-#         self.tab = QTabWidget()
-#         self.produce_tab()
-#
-#         self.layout.addWidget(self.tab)
-#         self.setLayout(self.layout)
-#
-#         self.user_input()
 
 class Tabs(QWidget):
 
@@ -65,8 +52,8 @@ class Tabs(QWidget):
 
         # --- layout for input
 
-        self.x0, self.X = QLineEdit(str(My.x0)), QLineEdit(str(My.X))
-        self.y0, self.N = QLineEdit(str(My.y0)), QLineEdit(str(My.N))
+        self.x0, self.X = QLineEdit(str(MyFunction.x0)), QLineEdit(str(MyFunction.X))
+        self.y0, self.N = QLineEdit(str(MyFunction.y0)), QLineEdit(str(MyFunction.N))
         column1.addRow("x0", self.x0)
         column1.addRow("X", self.X)
         column1.addRow("y0", self.y0)
@@ -158,22 +145,16 @@ class Tabs(QWidget):
         panel.addWidget(graphs_wd)
 
     def user_input(self):
-        x0 = float(self.x0.text())
-        X = float(self.X.text())
-        y0 = float(self.y0.text())
-        N = int(self.N.text())
 
-        n0 = int(self.n0.text())
-        N0 = int(self.N0.text())
-
-
-        (tab1, tab2) = Grid.generate_data(x0, X, y0, N, n0, N0)
+        # sending user input to Controller
+        (tab1, tab2) = Controller.update_tabs(self.x0, self.X, self.y0, self.N, self.n0, self.N0)
 
         #   plotting tab 1
         xs = tab1['xs'].tolist()
 
         self.g1.clear()
         self.g1.showGrid(x=True, y=True)
+
         self.g2.clear()
         self.g2.showGrid(x=True, y=True)
 
@@ -192,6 +173,7 @@ class Tabs(QWidget):
         #   plotting tab 2
         self.g.clear()
         self.g.showGrid(x=True, y=True)
+
         ns = tab2['ns']
 
         if self.em_check2.isChecked():
