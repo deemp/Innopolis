@@ -5,7 +5,6 @@ class Controller:
 
     @staticmethod
     def update_tabs(x0, X, y0, N, n0, N0):
-
         # processing user input
 
         x0 = float(x0.text())

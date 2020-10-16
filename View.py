@@ -147,16 +147,16 @@ class Tabs(QWidget):
     def user_input(self):
 
         # sending user input to Controller
-        (tab1, tab2) = Controller.update_tabs(self.x0, self.X, self.y0, self.N, self.n0, self.N0)
+        tab1, tab2 = Controller.update_tabs(self.x0, self.X, self.y0, self.N, self.n0, self.N0)
+        self.plot_tab1(tab1)
+        self.plot_tab2(tab2)
 
+    def plot_tab1(self, tab1):
         #   plotting tab 1
         xs = tab1['xs'].tolist()
 
-        self.g1.clear()
-        self.g1.showGrid(x=True, y=True)
-
-        self.g2.clear()
-        self.g2.showGrid(x=True, y=True)
+        self.renew_graph(self.g1)
+        self.renew_graph(self.g2)
 
         if self.es_check1.isChecked():
             self.plot(self.g1, xs, tab1['exact'], 'Exact solution', 'y')
@@ -170,9 +170,9 @@ class Tabs(QWidget):
             self.plot(self.g1, xs, tab1['rk_approx'], 'Runge-Kutta Method', 'g')
             self.plot(self.g2, xs, tab1['rk_lte'], 'Runge-Kutta Method', 'g')
 
+    def plot_tab2(self, tab2):
         #   plotting tab 2
-        self.g.clear()
-        self.g.showGrid(x=True, y=True)
+        self.renew_graph(self.g)
 
         ns = tab2['ns']
 
@@ -182,6 +182,10 @@ class Tabs(QWidget):
             self.plot(self.g, ns, tab2['iem_gte'], 'Improved Euler Method', 'b')
         if self.rk_check2.isChecked():
             self.plot(self.g, ns, tab2['rk_gte'], 'Runge-Kutta Method', 'g')
+
+    def renew_graph(self, graph):
+        graph.clear()
+        graph.showGrid(x=True, y=True)
 
     def plot(self, graph_wd, x, y, plotname, color):
         pen = qtg.mkPen(color=color)

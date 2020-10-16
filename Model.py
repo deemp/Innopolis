@@ -6,6 +6,7 @@ class Function:
     def method(self, *args):
         pass
 
+
 class MyFunction(Function):
     @staticmethod
     def F(x):
@@ -74,28 +75,27 @@ class RungeKutta(NumericalMethod):
 
 
 class Grid:
-    # xs, Ys, EM, IEM, LTE, GTE
     @staticmethod
     def generate_data(x0, X, y0, N, n0, N0):
 
-        # ============ putting definitions ============
+        # ============ putting definitions and updating Model ============
         x0, X, y0 = float(x0), float(X), float(y0)
         MyFunction.update(x0, y0)
 
+        exact_values = MyFunction().method
+        em, iem, rk = Euler().method, ImprovedEuler().method, RungeKutta().method
+        em_lte, iem_lte, rk_lte = Euler().lte, ImprovedEuler().lte, RungeKutta().lte
+
+        # ============ gathering plot data for tabs ============
+        tab1 = Grid.tab1_data(x0, X, N, exact_values, em, iem, rk, em_lte, iem_lte, rk_lte)
+        tab2 = Grid.tab2_data(x0, X, n0, N0, exact_values, em, iem, rk)
+
+        return tab1, tab2
+
+    @staticmethod
+    def tab1_data(x0, X, N, exact_values, em, iem, rk, em_lte, iem_lte, rk_lte):
         n = N + 1
         h = (X - x0) / N
-
-        exact_values = MyFunction().method
-
-        em = Euler().method
-        em_lte = Euler().lte
-
-        iem = ImprovedEuler().method
-        iem_lte = ImprovedEuler().lte
-
-        rk = RungeKutta().method
-        rk_lte = RungeKutta().lte
-
         # ============ collecting data for tab1 ============
 
         # ------------ calculating x-s ------------
@@ -115,8 +115,10 @@ class Grid:
                              'em_approx': approx[0], 'iem_approx': approx[1], 'rk_approx': approx[2],
                              'em_lte': lte[0], 'iem_lte': lte[1], 'rk_lte': lte[2]
                              })
-        # print(tab1[['xs', 'iem_approx', 'iem_lte']])
+        return tab1
 
+    @staticmethod
+    def tab2_data(x0, X, n0, N0, exact_values, em, iem, rk):
         # ============ collecting data for tab2 ============
 
         # ------------ calculating n-s ------------
@@ -135,5 +137,5 @@ class Grid:
 
         # ++++++++++++ gathering ++++++++++++
         tab2 = pd.DataFrame({'ns': ns, 'em_gte': gte[0], 'iem_gte': gte[1], 'rk_gte': gte[2]})
-        # print(tab2)
-        return (tab1, tab2)
+
+        return tab2
