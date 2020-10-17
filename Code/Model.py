@@ -74,68 +74,66 @@ class RungeKutta(NumericalMethod):
         return yi + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
-class Grid:
+class State:
     @staticmethod
-    def generate_data(x0, X, y0, N, n0, N0):
+    def update(x0, X, y0, N, n0, N0):
 
-        # ============ putting definitions and updating Model ============
+        # putting definitions and updating Model
         x0, X, y0 = float(x0), float(X), float(y0)
         MyFunction.update(x0, y0)
 
         exact_values = MyFunction().method
-        em, iem, rk = Euler().method, ImprovedEuler().method, RungeKutta().method
-        em_lte, iem_lte, rk_lte = Euler().lte, ImprovedEuler().lte, RungeKutta().lte
+        methods = (Euler().method, ImprovedEuler().method, RungeKutta().method)
+        ltes = (Euler().lte, ImprovedEuler().lte, RungeKutta().lte)
 
-        # ============ gathering plot data for tabs ============
-        tab1 = Grid.tab1_data(x0, X, N, exact_values, em, iem, rk, em_lte, iem_lte, rk_lte)
-        tab2 = Grid.tab2_data(x0, X, n0, N0, exact_values, em, iem, rk)
+        # gathering plot data for tabs
+        tab1 = State.tab1_data(x0, X, N, exact_values, methods, ltes)
+        tab2 = State.tab2_data(x0, X, n0, N0, exact_values, methods)
 
         return tab1, tab2
 
     @staticmethod
-    def tab1_data(x0, X, N, exact_values, em, iem, rk, em_lte, iem_lte, rk_lte):
+    def tab1_data(x0, X, N, exact, methods, ltes):
+        # collecting data for tab1
+
         n = N + 1
         h = (X - x0) / N
-        # ============ collecting data for tab1 ============
 
-        # ------------ calculating x-s ------------
+        # calculating x-s
         xs = np.empty(n)
         for i in range(n):
             xs[i] = x0 + i * h
 
-        # ------------ calculating exact and approximate values ------------
-        exact = exact_values(n, h)
-        approx = np.array([em(n, h), iem(n, h), rk(n, h)])
+        # calculating exact, approximate values, and LTE-s
+        exacts = exact(n, h)
+        approx = np.array([_(n, h) for _ in methods])
+        lte = np.array([_(n, h) for _ in ltes])
 
-        # ------------ calculating LTEs ------------
-        lte = np.array([em_lte(n, h), iem_lte(n, h), rk_lte(n, h)])
-
-        # ++++++++++++ gathering ++++++++++++
-        tab1 = pd.DataFrame({'xs': xs, 'exact': exact,
+        # gathering
+        tab1 = pd.DataFrame({'xs': xs, 'exact': exacts,
                              'em_approx': approx[0], 'iem_approx': approx[1], 'rk_approx': approx[2],
                              'em_lte': lte[0], 'iem_lte': lte[1], 'rk_lte': lte[2]
                              })
         return tab1
 
     @staticmethod
-    def tab2_data(x0, X, n0, N0, exact_values, em, iem, rk):
-        # ============ collecting data for tab2 ============
+    def tab2_data(x0, X, n0, N0, exact, methods):
+        # collecting data for tab2
 
-        # ------------ calculating n-s ------------
+        # calculating n-s
         ns = np.arange(n0, N0 + 1, 1)
 
-        # ------------ calculating GTEs ------------
+        # calculating GTEs
         n = N0 - n0 + 1
+
         gte = np.empty([3, n])
         for i in range(n):
             steps = n0 + i + 1
             h = (X - x0) / (steps - 1)
-            exacts = exact_values(steps, h)
-            gte[0][i] = np.max(np.abs(np.subtract(em(steps, h), exacts)))
-            gte[1][i] = np.max(np.abs(np.subtract(iem(steps, h), exacts)))
-            gte[2][i] = np.max(np.abs(np.subtract(rk(steps, h), exacts)))
+            for j, method in zip([0, 1, 2], methods):
+                gte[j][i] = np.max(np.abs(np.subtract(method(steps, h), exact(steps, h))))
 
-        # ++++++++++++ gathering ++++++++++++
+        # gathering
         tab2 = pd.DataFrame({'ns': ns, 'em_gte': gte[0], 'iem_gte': gte[1], 'rk_gte': gte[2]})
 
         return tab2

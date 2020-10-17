@@ -1,10 +1,10 @@
-from Code.Model import Grid
+from Code import Model
 
 
 class Controller:
 
     @staticmethod
-    def update_model(x0, X, y0, N, n0, N0):
+    def updated_model(x0, X, y0, N, n0, N0):
         # processing user input
 
         x0 = float(x0.text())
@@ -16,4 +16,4 @@ class Controller:
         N0 = int(N0.text())
 
         # Updating Model in accordance with user input
-        return Grid.generate_data(x0, X, y0, N, n0, N0)
+        return Model.State.update(x0, X, y0, N, n0, N0)
