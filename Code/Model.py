@@ -18,7 +18,7 @@ class MyFunction(Function):
     def f(x, y):
         return y / x - x * np.exp(y / x)
 
-    def method(self, n, h):
+    def exact(self, n, h):
         ys = np.empty(n)
         x0, F = MyFunction.x0, MyFunction.F
         for i in range(0, n):
@@ -74,21 +74,20 @@ class RungeKutta(NumericalMethod):
         return yi + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
-class State:
+class Model:
     @staticmethod
-    def update(x0, X, y0, N, n0, N0):
+    def get_state(x0, X, y0, N, n0, N0):
 
         # putting definitions and updating Model
-        x0, X, y0 = float(x0), float(X), float(y0)
         MyFunction.update(x0, y0)
 
-        exact_values = MyFunction().method
+        exact = MyFunction().exact
         methods = (Euler().method, ImprovedEuler().method, RungeKutta().method)
         ltes = (Euler().lte, ImprovedEuler().lte, RungeKutta().lte)
 
         # gathering plot data for tabs
-        tab1 = State.tab1_data(x0, X, N, exact_values, methods, ltes)
-        tab2 = State.tab2_data(x0, X, n0, N0, exact_values, methods)
+        tab1 = Model.tab1_data(x0, X, N, exact, methods, ltes)
+        tab2 = Model.tab2_data(x0, X, n0, N0, exact, methods)
 
         return tab1, tab2
 

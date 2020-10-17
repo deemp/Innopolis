@@ -1,10 +1,9 @@
-from Code import Model
-
+from Code.Model import Model
 
 class Controller:
 
     @staticmethod
-    def updated_model(x0, X, y0, N, n0, N0):
+    def model_state(x0, X, y0, N, n0, N0):
         # processing user input
 
         x0 = float(x0.text())
@@ -16,4 +15,4 @@ class Controller:
         N0 = int(N0.text())
 
         # Updating Model in accordance with user input
-        return Model.State.update(x0, X, y0, N, n0, N0)
+        return Model.get_state(x0, X, y0, N, n0, N0)

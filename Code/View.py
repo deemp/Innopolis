@@ -168,6 +168,6 @@ class Tabs(QWidget):
 
     def user_input(self):
         tab1_data, tab2_data = \
-            Controller.updated_model(self.tab1.x0, self.tab1.X, self.tab1.y0, self.tab1.N, self.tab2.n0, self.tab2.N0)
+            Controller.model_state(self.tab1.x0, self.tab1.X, self.tab1.y0, self.tab1.N, self.tab2.n0, self.tab2.N0)
         self.tab1.update_plots(tab1_data)
         self.tab2.update_plots(tab2_data)
