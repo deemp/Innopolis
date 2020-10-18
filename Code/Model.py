@@ -4,7 +4,7 @@ import pandas as pd
 
 class Function:
     # initial conditions
-    x0, y0, X, N, n0, N0 = 1., 0., 1.5, 5, 10, 30
+    x0, X, y0, N, n0, N0 = 1., 8., 0.0, 10, 10, 30
 
     @staticmethod
     def update(x0, y0):
