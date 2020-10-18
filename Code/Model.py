@@ -17,7 +17,7 @@ class Function:
         return y / x - x * np.exp(y / x)
 
 
-class Exact(Function):
+class ExactSolution(Function):
     @staticmethod
     def F(x):
         x0, y0 = Function.x0, Function.y0
@@ -44,13 +44,13 @@ class NumericalMethod(Function):
 
         return ys
 
-    def lte(self, n, h):
-        lte = np.zeros(n)
+    def ltes(self, n, h):
+        ltes = np.zeros(n)
         for i in range(0, n - 1):
             xi = self.x0 + h * i
-            lte[i + 1] = np.abs(self.nxt(xi, Exact.F(xi), h) - Exact.F(xi + h))
+            ltes[i + 1] = np.abs(self.nxt(xi, ExactSolution.F(xi), h) - ExactSolution.F(xi + h))
 
-        return lte
+        return ltes
 
 
 class Euler(NumericalMethod):
@@ -78,11 +78,11 @@ class Model:
     def get_state(x0, X, y0, N, n0, N0):
 
         # putting definitions and updating Model
-        Exact.update(x0, y0)
+        Function.update(x0, y0)
 
-        exact = Exact().values
+        exact = ExactSolution().values
         methods = (Euler().values, ImprovedEuler().values, RungeKutta().values)
-        ltes = (Euler().lte, ImprovedEuler().lte, RungeKutta().lte)
+        ltes = (Euler().ltes, ImprovedEuler().ltes, RungeKutta().ltes)
 
         # gathering plot data for tabs
         tab1 = Model.tab1_data(x0, X, N, exact, methods, ltes)
