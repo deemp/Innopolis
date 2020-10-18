@@ -3,74 +3,73 @@ import pandas as pd
 
 
 class Function:
-    def method(self, *args):
-        pass
-
-
-class MyFunction(Function):
-    @staticmethod
-    def F(x):
-        x0, y0 = MyFunction.x0, MyFunction.y0
-        C = np.exp(-y0 / x0) - x0
-        return -x * np.log(x + C)
-
-    @staticmethod
-    def f(x, y):
-        return y / x - x * np.exp(y / x)
-
-    def exact(self, n, h):
-        ys = np.empty(n)
-        x0, F = MyFunction.x0, MyFunction.F
-        for i in range(0, n):
-            ys[i] = F(x0 + h * i)
-
-        return ys
-
     # initial conditions
     x0, y0, X, N, n0, N0 = 1., 0., 1.5, 5, 10, 30
 
     @staticmethod
     def update(x0, y0):
-        MyFunction.x0, MyFunction.y0 = x0, y0
+        Function.x0, Function.y0 = x0, y0
+
+    def values(self, n, h):
+        pass
+
+    def f(self, x, y):
+        return y / x - x * np.exp(y / x)
+
+
+class Exact(Function):
+    @staticmethod
+    def F(x):
+        x0, y0 = Function.x0, Function.y0
+        C = np.exp(-y0 / x0) - x0
+        return -x * np.log(x + C)
+
+    def values(self, n, h):
+        ys = np.empty(n)
+        x0, F = self.x0, self.F
+        for i in range(0, n):
+            ys[i] = F(x0 + h * i)
+
+        return ys
 
 
 class NumericalMethod(Function):
     def nxt(self, xi, yi, h):
         return yi
 
-    def method(self, n, h):
-        ys = np.full(n, MyFunction.y0)
+    def values(self, n, h):
+        ys = np.full(n, self.y0)
         for i in range(0, n - 1):
-            ys[i + 1] = self.nxt(MyFunction.x0 + h * i, ys[i], h)
+            ys[i + 1] = self.nxt(self.x0 + h * i, ys[i], h)
 
         return ys
 
     def lte(self, n, h):
         lte = np.zeros(n)
         for i in range(0, n - 1):
-            xi = MyFunction.x0 + h * i
-            lte[i + 1] = np.abs(self.nxt(xi, MyFunction.F(xi), h) - MyFunction.F(xi + h))
+            xi = self.x0 + h * i
+            lte[i + 1] = np.abs(self.nxt(xi, Exact.F(xi), h) - Exact.F(xi + h))
 
         return lte
 
 
 class Euler(NumericalMethod):
     def nxt(self, xi, yi, h):
-        return yi + h * MyFunction.f(xi, yi)
+        return yi + h * self.f(xi, yi)
 
 
 class ImprovedEuler(NumericalMethod):
     def nxt(self, xi, yi, h):
-        y = yi + h * MyFunction.f(xi, yi)
-        return yi + h / 2 * (MyFunction.f(xi, yi) + MyFunction.f(xi + h, y))
+        y = yi + h * self.f(xi, yi)
+        return yi + h / 2 * (self.f(xi, yi) + self.f(xi + h, y))
 
 
 class RungeKutta(NumericalMethod):
     def nxt(self, xi, yi, h):
-        k1 = MyFunction.f(xi, yi)
-        k2 = MyFunction.f(xi + h / 2, yi + h / 2 * k1)
-        k3 = MyFunction.f(xi + h / 2, yi + h / 2 * k2)
-        k4 = MyFunction.f(xi + h, yi + h * k3)
+        k1 = self.f(xi, yi)
+        k2 = self.f(xi + h / 2, yi + h / 2 * k1)
+        k3 = self.f(xi + h / 2, yi + h / 2 * k2)
+        k4 = self.f(xi + h, yi + h * k3)
         return yi + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
@@ -79,10 +78,10 @@ class Model:
     def get_state(x0, X, y0, N, n0, N0):
 
         # putting definitions and updating Model
-        MyFunction.update(x0, y0)
+        Exact.update(x0, y0)
 
-        exact = MyFunction().exact
-        methods = (Euler().method, ImprovedEuler().method, RungeKutta().method)
+        exact = Exact().values
+        methods = (Euler().values, ImprovedEuler().values, RungeKutta().values)
         ltes = (Euler().lte, ImprovedEuler().lte, RungeKutta().lte)
 
         # gathering plot data for tabs

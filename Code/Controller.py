@@ -3,7 +3,7 @@ from Code.Model import Model
 class Controller:
 
     @staticmethod
-    def model_state(x0, X, y0, N, n0, N0):
+    def get_model_state(x0, X, y0, N, n0, N0):
         # processing user input
 
         x0 = float(x0.text())

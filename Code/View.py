@@ -3,7 +3,7 @@ import pyqtgraph as qtg
 from PyQt5.QtWidgets import QPushButton, QMainWindow, QWidget, QTabWidget, QVBoxLayout, \
     QLineEdit, QHBoxLayout, QFormLayout, QCheckBox
 
-from Code.Model import MyFunction
+from Code.Model import Exact
 
 from Code.Controller import Controller
 
@@ -60,7 +60,7 @@ class Tab(QWidget):
         # --- layout for input
 
         for input_label in self.input_labels:
-            setattr(self, input_label, QLineEdit(str(getattr(MyFunction, input_label))))
+            setattr(self, input_label, QLineEdit(str(getattr(Exact, input_label))))
             column1.addRow(input_label, getattr(self, input_label))
 
         # --- layout for checkboxes for enabling/disabling graphs
@@ -168,6 +168,6 @@ class Tabs(QWidget):
 
     def user_input(self):
         tab1_data, tab2_data = \
-            Controller.model_state(self.tab1.x0, self.tab1.X, self.tab1.y0, self.tab1.N, self.tab2.n0, self.tab2.N0)
+            Controller.get_model_state(self.tab1.x0, self.tab1.X, self.tab1.y0, self.tab1.N, self.tab2.n0, self.tab2.N0)
         self.tab1.update_plots(tab1_data)
         self.tab2.update_plots(tab2_data)
