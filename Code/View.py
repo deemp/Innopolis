@@ -1,11 +1,9 @@
 import pyqtgraph as qtg
-
 from PyQt5.QtWidgets import QPushButton, QMainWindow, QWidget, QTabWidget, QVBoxLayout, \
     QLineEdit, QHBoxLayout, QFormLayout, QCheckBox
 
-from Code.Model import ExactSolution
-
 from Code.Controller import Controller
+from Code.Model import ExactSolution
 
 
 class App(QMainWindow):

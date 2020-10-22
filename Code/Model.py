@@ -32,7 +32,7 @@ class ExactSolution(Function):
         return -x * np.log(x + C)
 
     def nxt(self, xi, yi, h):
-        return self.F(xi+h)
+        return self.F(xi + h)
 
 
 class NumericalMethod(Function):

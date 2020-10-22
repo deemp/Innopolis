@@ -1,5 +1,6 @@
 from Code.Model import Model
 
+
 class Controller:
 
     @staticmethod
