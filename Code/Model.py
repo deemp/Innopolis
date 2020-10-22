@@ -11,10 +11,17 @@ class Function:
         Function.x0, Function.y0 = x0, y0
 
     def values(self, n, h):
-        pass
+        ys = np.full(n, self.y0)
+        for i in range(0, n - 1):
+            ys[i + 1] = self.nxt(self.x0 + h * i, ys[i], h)
+
+        return ys
 
     def f(self, x, y):
         return y / x - x * np.exp(y / x)
+
+    def nxt(self, xi, yi, h):
+        return yi
 
 
 class ExactSolution(Function):
@@ -24,25 +31,11 @@ class ExactSolution(Function):
         C = np.exp(-y0 / x0) - x0
         return -x * np.log(x + C)
 
-    def values(self, n, h):
-        ys = np.empty(n)
-        x0, F = self.x0, self.F
-        for i in range(0, n):
-            ys[i] = F(x0 + h * i)
-
-        return ys
+    def nxt(self, xi, yi, h):
+        return self.F(xi+h)
 
 
 class NumericalMethod(Function):
-    def nxt(self, xi, yi, h):
-        return yi
-
-    def values(self, n, h):
-        ys = np.full(n, self.y0)
-        for i in range(0, n - 1):
-            ys[i + 1] = self.nxt(self.x0 + h * i, ys[i], h)
-
-        return ys
 
     def ltes(self, n, h):
         ltes = np.zeros(n)
@@ -112,6 +105,8 @@ class Model:
                              'em_approx': approx[0], 'iem_approx': approx[1], 'rk_approx': approx[2],
                              'em_lte': lte[0], 'iem_lte': lte[1], 'rk_lte': lte[2]
                              })
+        # view tab1 data:
+        # print(tab1[['xs', 'exact', 'em_approx', 'em_lte']])
         return tab1
 
     @staticmethod
@@ -133,5 +128,8 @@ class Model:
 
         # gathering
         tab2 = pd.DataFrame({'ns': ns, 'em_gte': gte[0], 'iem_gte': gte[1], 'rk_gte': gte[2]})
+
+        # view tab2 data:
+        print(tab2[['ns', 'em_gte']])
 
         return tab2
