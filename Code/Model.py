@@ -130,6 +130,6 @@ class Model:
         tab2 = pd.DataFrame({'ns': ns, 'em_gte': gte[0], 'iem_gte': gte[1], 'rk_gte': gte[2]})
 
         # view tab2 data:
-        print(tab2[['ns', 'em_gte']])
+        # print(tab2[['ns', 'em_gte']])
 
         return tab2
