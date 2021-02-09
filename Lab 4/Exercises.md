@@ -64,3 +64,11 @@ HAVING
 ```
 
 ### Exercise 2
+
+#### 1. Create 2 Views of your choice.
+##### a.
+##### b.
+
+#### 2. Implement one of the views into a query.
+
+#### 3. Create a Trigger of your choice.
