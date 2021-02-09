@@ -32,20 +32,20 @@ than 11 dollars.
 
 ```sql
 SELECT
-  first_name, last_name, city
+  DISTINCT customer
 FROM
-  customers;
+  customers
+WHERE
+  payment >= 11;
 ```
 
 #### 4. List all customers' first name, last name and the city they live in.
 
 ```sql
 SELECT
-  DISTINCT customer
+  first_name, last_name, city
 FROM
-  customers
-WHERE
-  payment >= 11;
+  customers;
 ```
 
 
@@ -66,9 +66,46 @@ HAVING
 ### Exercise 2
 
 #### 1. Create 2 Views of your choice.
-##### a.
+
+##### a. 
+
+```sql
+CREATE VIEW cat AS SELECT * FROM category;
+```
+
 ##### b.
 
+```sql
+CREATE VIEW f AS SELECT * FROM film;
+
+```
 #### 2. Implement one of the views into a query.
 
+```sql
+SELECT * INTO p FROM cat;
+```
+
+
 #### 3. Create a Trigger of your choice.
+```sql
+CREATE OR REPLACE FUNCTION rent_func()
+ RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS                          
+$$
+BEGIN
+IF rental.rental_date < rental.return_date
+THEN 
+INSERT INTO country (country_id, country, last_update) 
+VALUES (city.country_id, 'Gvatemala', now());
+END IF;
+RETURN rental;
+END;
+$$
+;
+
+CREATE TRIGGER rent_func_trigger
+BEFORE UPDATE ON rental
+FOR EACH ROW
+EXECUTE PROCEDURE rent_func();
+```
