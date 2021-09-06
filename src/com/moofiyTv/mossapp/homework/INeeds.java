@@ -1,6 +1,6 @@
 package com.moofiyTv.mossapp.homework;
 
-public interface Needs {
+public interface INeeds {
 
     void pray();
 
@@ -11,8 +11,5 @@ public interface Needs {
     void ownCompany();
 
     void becomeEmployee();
-
-
-
-
+    
 }
