@@ -3,12 +3,6 @@ from PyQt5.QtWidgets import QVBoxLayout
 
 from vispy_canvas import canvas, visualUpdates, informationUpdates, timer
 
-
-# Substitute this 
-# class Ui_Dialog 
-# for new generated interface
-
-
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")

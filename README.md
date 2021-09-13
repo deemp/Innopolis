@@ -1,9 +1,39 @@
 # BS19-F21-TM
 
-## Danila Danko
+Danko Danila's repo
 
-Homeworks
+## Homeworks
 
 1. [HW1](https://colab.research.google.com/drive/1PP9_DvqwEvWMQBGfOrU7PobwpEPjV-HC?usp=sharing)
 2. [HW2]()
 3. [Big HW 1](https://github.com/br4ch1st0chr0n3/TM/tree/master/Big-HW-1)
+
+## Environment setup
+
+1. [Install miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html) - **Installing on Linux** section.
+
+1. Create and activate virtual environment
+
+   ```sh
+   conda create -n TM python=3.7
+   conda activate TM
+   ```
+
+1. Install PyQt5
+
+    ```sh
+    pip install PyQt5
+    ```
+
+1. Install QtDesigner
+
+   ```sh
+   sudo apt-get install qttools5-dev-tools
+   sudo apt-get install qttools5-dev
+   ```
+
+1. Install vispy
+
+   ```sh
+   pip install vispy
+   ```
