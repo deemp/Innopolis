@@ -25,7 +25,7 @@ Danko Danila's repo
     pip install PyQt5
     ```
 
-1. Install QtDesigner
+1. Install QtDesigner (in case you want to edit GUI)
 
    ```sh
    sudo apt-get install qttools5-dev-tools
