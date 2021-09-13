@@ -1,7 +1,5 @@
 import numpy as np
 
-from sympy import sin, integrate, diff, symbols, sqrt
-
 a_t_max = 10
 a_n_max = 6
 v_max = 1.5
@@ -26,7 +24,6 @@ def sigma_from_x(x):
 # sigma_dot <= v_max
 # sigma_ddot <= a_t_max
 # sigma_dot^2 
-# print(x_from_sigma(3))
 
 # we take segments between critical trajectory points
 # and let particle reach given speeds
@@ -124,12 +121,12 @@ def get_velocities():
 
 vs = get_velocities()
 
-sigma_i = np.cumsum(vs * dt)
+sigma_t = np.cumsum(vs * dt)
 
 def x_from_sigma(s):
     return np.searchsorted(a=sigma, v=s, side='left')
 
-x = xs[x_from_sigma(sigma_i)]
+x = xs[x_from_sigma(sigma_t)]
 y = np.sin(3*x + theta_0)
 
 sigma_ddot = np.gradient(vs,time)
@@ -138,7 +135,7 @@ sigma_ddot = np.gradient(vs,time)
 y_ddxs = np.gradient(y_dxs, xs)
 # print(y_ddxs)
 ks = np.abs(y_ddxs)/(1 + y_dxs**2)**(3/2)
-a_ns = vs**2 * ks[x_from_sigma(sigma_i)]
+a_ns = vs**2 * ks[x_from_sigma(sigma_t)]
 # print(a_ns[:20])
 
 
