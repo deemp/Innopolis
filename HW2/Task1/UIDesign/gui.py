@@ -240,7 +240,6 @@ class Ui_Dialog(object):
         self.labelA_4.setText(_translate("Dialog", "C-D"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabLinks), _translate("Dialog", "Links"))
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
