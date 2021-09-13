@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 
 from model import y_x, y_t, v_t, a_n_t, a_t_t, k
 from vispy import scene, app
@@ -55,7 +54,9 @@ add_f_h(0, 1, y_t, 'y(t)', 'y', 't')
 add_f_h(0, 2, v_t, 'v(t)', 'v', 't')
 add_f_h(1, 0, a_n_t, 'a_n(t)', 'a_n', 't')
 add_f_h(1, 2, a_t_t, 'a_t(t)', 'a_t', 't')
-# add_f_h(1, 2, k, 'k(x)', 'k', 'x')
+
+def run():
+    app.run()
 
 if __name__ == '__main__' and sys.flags.interactive == 0:
-    app.run()
+    run()
