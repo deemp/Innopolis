@@ -1,19 +1,12 @@
-from time import time
-from PyQt5.QtCore import reset
-from numpy.core.fromnumeric import transpose
-from vispy import color
 from vispy.scene.canvas import SceneCanvas
 from vispy.visuals.text.text import TextVisual
 from model import \
     points, velocities, free_velocities, angular_velocities, \
     accelerations, free_accelerations, N, links
-from vispy.gloo.util import _screenshot
 from vispy.scene import AxisWidget
 from vispy.scene.visuals import Line, Arrow, Markers
-import imageio
 import numpy as np
 import random
-from pathlib import Path
 from vispy.color import Colormap
 from vispy import app
 import sys
