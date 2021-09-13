@@ -6,5 +6,5 @@
 
 - ## Notes
 
-  - You can zoom plots via touchpad or mouse ball
+  - You can zoom plots via touchpad or mouse scroll wheel
   - Press `Esc` to leave full-screen mode
