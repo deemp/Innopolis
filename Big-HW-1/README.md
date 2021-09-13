@@ -4,4 +4,7 @@
 
 - ## [Instructions for running the project](https://github.com/br4ch1st0chr0n3/TM/blob/master/README.md)
 
-- N.B. You can zoom plots
+- ## Notes
+
+  - You can zoom plots
+  - Press `Esc` to leave full-screen mode
