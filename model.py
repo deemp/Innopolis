@@ -10,14 +10,14 @@ theta_0 = 0.2
 A = 1
 x_min = 0
 x_max = 4
-num_x = 100000
+num = 100000
 
-xs = np.linspace(start=0., stop=4., num=num_x)
+xs = np.linspace(start=0., stop=4., num=num)
 ys = np.sin(3*xs + theta_0)
-y_dots = np.gradient(ys,xs)
+y_dxs = np.gradient(ys,xs)
 
 dx = xs[1] - xs[0]
-sigma = np.cumsum(np.sqrt(1+np.square(y_dots))*dx)
+sigma = np.cumsum(np.sqrt(1+np.square(y_dxs))*dx)
 
 def sigma_from_x(x):
     return sigma[int(x/dx)]
@@ -92,22 +92,18 @@ def get_v_i():
     
 v_i = get_v_i()
 
-print(v_i)
 
-# num_t = 100000
-num_t = 100
-
-time = np.linspace(start=0, stop=t_i[-1], num=num_t)
+time = np.linspace(start=0, stop=t_i[-1], num=num)
 dt = time[1] - time[0]
 
 def get_velocities():
-    v = np.zeros(num_t)
+    v = np.zeros(num)
 
     # we use pointer to keep track of segment 
     # where velocity changes
     t_i_cur_idx = 0
     
-    for i in range(num_t):
+    for i in range(num):
         t = time[i]
         # go to next segment
         if t > t_i[t_i_cur_idx]:
@@ -136,8 +132,24 @@ def x_from_sigma(s):
 x = xs[x_from_sigma(sigma_i)]
 y = np.sin(3*x + theta_0)
 
-p = np.vstack((x, y)).T
+sigma_ddot = np.gradient(vs,time)
+
+# calculate curvatures
+y_ddxs = np.gradient(y_dxs, xs)
+# print(y_ddxs)
+ks = np.abs(y_ddxs)/(1 + y_dxs**2)**(3/2)
+a_ns = vs**2 * ks[x_from_sigma(sigma_i)]
+# print(a_ns[:20])
 
 
+y_x = np.vstack((x, y)).T
 
-# print(p[:100])
+y_t = np.vstack((time,y)).T
+
+v_t = np.vstack((time, vs)).T
+
+a_t_t = np.vstack((time, sigma_ddot)).T
+
+a_n_t = np.vstack((time, a_ns)).T
+
+k = np.vstack((xs, ks)).T
