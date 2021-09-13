@@ -4,7 +4,7 @@ import numpy as np
 from model import y_x, y_t, v_t, a_n_t, a_t_t, k
 from vispy import scene, app
 
-canvas = scene.SceneCanvas(keys='interactive', size=(600, 600), show=True)
+canvas = scene.SceneCanvas(keys='interactive', fullscreen=True, show=True)
 
 grid = canvas.central_widget.add_grid(margin=10)
 
