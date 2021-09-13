@@ -1,6 +1,6 @@
 # Saving animation
 
-1. Import `imageio`
+1. Install `imageio`
 
     ```sh
     pip install imageio
