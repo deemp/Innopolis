@@ -7,6 +7,7 @@ Danko Danila's repo
 1. [HW1](https://colab.research.google.com/drive/1PP9_DvqwEvWMQBGfOrU7PobwpEPjV-HC?usp=sharing)
 2. [HW2](https://github.com/br4ch1st0chr0n3/TM/tree/master/HW2)
 3. [Big HW 1](https://github.com/br4ch1st0chr0n3/TM/tree/master/Big-HW-1)
+4. [Big HW 2](https://www.mathcha.io/editor/YD7jLSDqiG2u8zh0yk1K6IY938zMugGWVlgIEp2wKG)
 
 ## Environment setup
 
