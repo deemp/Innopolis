@@ -1,5 +1,5 @@
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtWidgets import QVBoxLayout
 
 from vispy_canvas import canvas, visualUpdates, informationUpdates, timer
 
@@ -144,7 +144,7 @@ def run():
     f = Functionality(ui)
 
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     run()
