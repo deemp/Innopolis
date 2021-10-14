@@ -16,7 +16,7 @@ $(VENV)/Scripts/activate: requirements.txt
 # create environment
 	python -m venv $(VENV)
 # install requirements
-# $(PIP) install -r requirements.txt
+	$(PIP) install -r requirements.txt
 
 clean:
 	python -Bc "import pathlib; [p.unlink() for p in pathlib.Path('.').rglob('*.py[co]')]"
