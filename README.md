@@ -1,6 +1,12 @@
 # F21FoR
 
-Use ROS2 on Windows
-* Install [Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html#alternative-ros-2-build-installation-from-aka-ms-ros)
-* Create a [shortcut](http://wiki.ros.org/Installation/Windows)
-* Go through [tutorial](https://docs.ros.org/en/foxy/Tutorials/Workspace/Creating-A-Workspace.html)
+## Lectures
+1. [Introduction](https://moodle.innopolis.university/pluginfile.php/135094/mod_resource/content/1/L1%20-%20Introduction.pdf)
+2. [Position and orientation of rigid bodies, Rigid body and Homogeneous transformation](https://moodle.innopolis.university/pluginfile.php/135095/mod_resource/content/1/L2%20-%20Position%20and%20orientation%20of%20rigid%20bodies.pdf)
+
+## Labs
+* Lab 1
+  1. Use ROS2 on Windows
+      * Install [Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html#alternative-ros-2-build-installation-from-aka-ms-ros)
+      * Create a [shortcut](http://wiki.ros.org/Installation/Windows)
+      * Go through [tutorial](https://docs.ros.org/en/foxy/Tutorials/Workspace/Creating-A-Workspace.html)
