@@ -1,7 +1,5 @@
 # BS19-F21-TM
 
-Danko Danila's repo
-
 ## Homeworks
 
 1. [HW1](https://colab.research.google.com/drive/1PP9_DvqwEvWMQBGfOrU7PobwpEPjV-HC?usp=sharing)
