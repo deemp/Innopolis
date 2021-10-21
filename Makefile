@@ -2,9 +2,7 @@ VENV = env
 PYTHON = $(VENV)/Scripts/python3
 PIP = $(VENV)/Scripts/pip3
 
-setup: $(VENV)/bin/activate
-
-$(VENV)/bin/activate: requirements.txt
+setup: requirements.txt
 	python -m venv $(VENV)
 	$(PIP) install -r requirements.txt
 
