@@ -5,7 +5,7 @@
 2. [Position and orientation of rigid bodies, Rigid body and Homogeneous transformation](https://moodle.innopolis.university/pluginfile.php/135095/mod_resource/content/1/L2%20-%20Position%20and%20orientation%20of%20rigid%20bodies.pdf)
 
 ## Labs
-* Lab 1
+* [Lab 1](https://moodle.innopolis.university/pluginfile.php/135131/mod_resource/content/2/Fundamentals%20of%20robotics.pdf)
   1. Use ROS2 on Windows
       * Install [Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html#alternative-ros-2-build-installation-from-aka-ms-ros)
       * Create a [shortcut](http://wiki.ros.org/Installation/Windows)
