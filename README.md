@@ -1,7 +1,7 @@
 # F21 Mechatronics
 
 ## Labs
-* [Lab 1](./Lab1.py)
+* [Lab 1](./Lab1.ipynb)
 
 ## Setup
 * [Install](./wiki.md#make) `make`
