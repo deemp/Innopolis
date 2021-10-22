@@ -10,3 +10,4 @@
       * Install [Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html#alternative-ros-2-build-installation-from-aka-ms-ros)
       * Create a [shortcut](http://wiki.ros.org/Installation/Windows)
       * Go through [tutorial](https://docs.ros.org/en/foxy/Tutorials/Workspace/Creating-A-Workspace.html)
+        * on `ros2 run rqt_console rqt_console`, there might be an [error](https://answers.ros.org/question/350818/oserror-winerror-193-1-when-running-ros2-run-rqt_console-rqt_console/).
