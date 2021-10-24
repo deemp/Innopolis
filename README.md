@@ -84,4 +84,4 @@ For specific tasks change `task_name` to one of the following constants
    ```
 
 ## Notes
-1. For [Control bootcamp](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m) - <img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text">[link](https://www.mathcha.io/editor/Ov4BQso6UzgsgZHgxEJL2T0EWMXfvzJ8d3trKYj04)
+1. For [Control bootcamp](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m) - <img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text">[Notes](https://www.mathcha.io/editor/Ov4BQso6UzgsgZHgxEJL2T0EWMXfvzJ8d3trKYj04)
