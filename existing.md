@@ -40,11 +40,8 @@
 ## Шагающие
 * https://spectrum.ieee.org/little-wheeled-robot-puts-on-new-shoes-to-go-offroad
 
-* 
-
 ## Ползающие
 * https://24gadget.ru/1161070087-innovacionnyj-gusenichnyj-robot-ot-izrailskih-razrabotchikov.html
-* 
 
 ## Летающие
 * https://youtu.be/iwi3p7IENjE
