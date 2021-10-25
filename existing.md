@@ -24,6 +24,7 @@
             * [open-source](https://github.com/robomechanics/MiniRHex)
             * See also [rugged](https://www.rhex.web.tr/)
             * [parkour](https://youtu.be/ntlI-pDUxPE)
+            * probably, need damper for stiffness
     * 3С - leg + wheel
         * 3 segments
             * https://youtu.be/w-DbcbV9oRU
