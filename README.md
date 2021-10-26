@@ -7,22 +7,6 @@
 * [Code](./Lab1.ipynb)
 * [Theoretical solutions](https://www.mathcha.io/editor/KvDNQSGkSK6H6gsrNMwnEsvEQzPOh3VBj0MTVqPlP4)
 
+
 ## Setup
-* Clone this repository
-   ```sh
-   git clone https://github.com/br4ch1st0chr0n3/F21Meh
-   ```
-   
-* Go to the cloned repository
-   ```sh
-   cd F21Meh
-   ```
-   
-* [Install](./wiki.md#make) `make`
-
-* Setup with `make`. It will create a new virtual environment `env` and install required packages.
-    ```sh
-    make setup
-    ```
-
-* [Activate environment](https://docs.python.org/3/tutorial/venv.html) if necessary. ([Powershell](https://stackoverflow.com/a/10030999))
+See [wiki](https://github.com/br4ch1st0chr0n3/F21Meh/wiki)
