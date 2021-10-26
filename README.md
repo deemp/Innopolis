@@ -8,5 +8,5 @@
 * [Theoretical solutions](https://www.mathcha.io/editor/KvDNQSGkSK6H6gsrNMwnEsvEQzPOh3VBj0MTVqPlP4)
 
 
-## Setup
+## Project setup
 See [wiki](https://github.com/br4ch1st0chr0n3/F21Meh/wiki#project-setup)
