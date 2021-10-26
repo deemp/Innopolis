@@ -24,3 +24,5 @@
     ```sh
     make setup
     ```
+
+* [Activate](https://docs.python.org/3/tutorial/venv.html) if necessary. ([Powershell](https://stackoverflow.com/a/10030999))
