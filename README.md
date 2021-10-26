@@ -9,4 +9,4 @@
 
 
 ## Setup
-See [wiki](https://github.com/br4ch1st0chr0n3/F21Meh/wiki)
+See [wiki](https://github.com/br4ch1st0chr0n3/F21Meh/wiki#project-setup)
