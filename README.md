@@ -7,6 +7,8 @@
 * [Code](./Lab1.ipynb)
 * [Theoretical solutions](https://www.mathcha.io/editor/KvDNQSGkSK6H6gsrNMwnEsvEQzPOh3VBj0MTVqPlP4)
 
+## Quiz 1
+* [Notes](https://www.mathcha.io/editor/PvKygIZ1t7ktL6s19d5J4t9d4dn2te51PQwiG33z72)
 
 ## Project setup
 See [wiki](https://github.com/br4ch1st0chr0n3/F21Meh/wiki#project-setup)
