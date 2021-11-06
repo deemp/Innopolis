@@ -1,0 +1,73 @@
+# before first commits run
+# https://stackoverflow.com/questions/45400361/why-is-gitignore-not-ignoring-my-files
+# git rm -r --cached .
+# git add .
+# git commit -m "Untrack files in .gitignore"
+
+# ---------------------------------------------------------
+# default ignored
+
+
+#  Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+
+#  C extensions
+*.so
+
+#  Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+# Usually these files are written by a python script from a template
+# before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+#  Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+#  Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+
+#  Translations
+*.mo
+*.pot
+
+#  Django stuff:
+*.log
+
+#  Sphinx documentation
+docs/_build/
+
+#  PyBuilder
+target/
+
+# ide-specific
+.vscode/
+
+# --------------------------------------------
