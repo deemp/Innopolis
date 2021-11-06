@@ -1,8 +1,9 @@
 import numpy as np
-from sympy.core.symbol import Symbol
+import sympy as sp
+from sympy.core.symbol import symbols
 
 link_lengths = [1,1,1,1,1,1]
-fk_input = [0,0,0,0,0,0]
+fk_input = [0.1,0.1,0.1,0.1,0.1,0.1]
 
 def transoform_base(base_frame, q, flag):
     sol = FK_solve(q, flag)
@@ -13,7 +14,6 @@ def transoform_base(base_frame, q, flag):
     elif flag == "full":
         return [np.dot(base_frame, i) for i in sol]
 
-import sympy as sp
 
 # rotation matrices
 q = sp.Symbol('q')
@@ -69,140 +69,212 @@ for axis, trans31 in trans_symb.items():
     T[:3,3] = trans_symb[axis]
     trans_symb[axis] = T
 
-def rot_symb_q(axis: str, theta: sp.Symbol):
-    return rot_symb[axis].subs(q, theta)
+qs = sp.symbols('q1 q2 q3 q4 q5 q6')
+q1, q2, q3, q4, q5, q6 = qs
+l1, l2, l3, l4, l5, l6 = link_lengths
 
-def trans_symb_d(axis: str, dist: sp.Symbol):
-    return trans_symb[axis].subs(d, dist)
+def transform_base(base_frame, ts):
+    return [base_frame] + ts
 
-def rot_num(axis: str, theta: np.float64):
-    return np.array(rot_symb[axis].subs(q, theta).evalf()).astype(np.float64)
+def rotate_symbolic(axis, angle):
+    return rot_symb[axis].subs(q, angle)
 
-def trans_num(axis: str, dist: np.float64):
-    return np.array(trans_symb[axis].subs(d, dist).evalf()).astype(np.float64)
+def translate_symbolic(axis, distance):
+    return trans_symb[axis].subs(d, distance)
 
-q1, q2, q3, q4, q5, q6 = sp.symbols('q1 q2 q3 q4 q5 q6')
+def get_T(args):
+    if args["T"] == "R":
+        args.pop("T", None)
+        return rotate_symbolic(**args)
+    elif args["T"] == "T":
+        args.pop("T", None)
+        return translate_symbolic(**args)
 
-def fk_solve_symb():
-    """Forward kinematics symbolic solver
+def compose_T(args):
+    t = [get_T(arg) for arg in args]
+    for i in range(1, len(t)):
+        t[i] = t[i-1] * t[i]
+    return t[-1]
 
-    ----------
-    ### Parameters
-        `q` : `[q_i]`
-            6 joint angles
-        `flag` : `str`
-            defines output format
+def fk_symb():
+    T12 = compose_T([
+        {"T": "R", "axis": "z", "angle": q1 + sp.pi/2},
+        {"T": "R", "axis": "x", "angle": sp.pi/2},
+        {"T": "T", "axis": "y", "distance": l1}
+    ])
+    T23 = compose_T([
+        {"T": "R", "axis": "z", "angle": q2},
+        {"T": "T", "axis": "x", "distance": l2}
+    ])
+    T34 = compose_T([
+        {"T": "R", "axis": "z", "angle": q3 - sp.pi/2},
+        {"T": "R", "axis": "y", "angle": -sp.pi/2},
+        {"T": "T", "axis": "y", "distance": l3}
+    ])
+    T45 = compose_T([
+        {"T": "R", "axis": "z", "angle": q4 + sp.pi/2},
+        {"T": "R", "axis": "x", "angle": sp.pi/2},
+        {"T": "T", "axis": "y", "distance": l4}
+    ])
+    T56 = compose_T([
+        {"T": "R", "axis": "z", "angle": q5 + sp.pi/2},
+        {"T": "R", "axis": "x", "angle": sp.pi/2},
+        {"T": "T", "axis": "z", "distance": l5}
+    ])
+    T6e = compose_T([
+        {"T": "R", "axis": "z", "angle": q6},
+        {"T": "T", "axis": "z", "distance": l6}
+    ])
+    return [T12, T23, T34, T45, T56, T6e]
 
-    -------
-    ### Returns
-            list of 4x4 homogeneous symbolic T_{0}^{i}
-    """
+ts = fk_symb()
 
-    
-    l1, l2, l3, l4, l5, l6 = link_lengths
+def fk_dh_symb():
+    T12 = compose_T([
+        {"T": "R", "axis": "z", "angle": q1 + sp.pi/2},
+        {"T": "T", "axis": "z", "distance": l1},
+        {"T": "R", "axis": "x", "angle": sp.pi/2}
+    ])
+    T23 = compose_T([
+        {"T": "R", "axis": "z", "angle": q2},
+        {"T": "T", "axis": "x", "distance": l2}
+    ])
+    T34 = compose_T([
+        {"T": "R", "axis": "z", "angle": q3},
+        {"T": "T", "axis": "x", "distance": l3},
+        {"T": "R", "axis": "x", "angle": -sp.pi/2}
+    ])
+    T45 = compose_T([
+        {"T": "R", "axis": "z", "angle": q4},
+        {"T": "T", "axis": "z", "distance": l4},
+        {"T": "R", "axis": "x", "angle": sp.pi/2}
+    ])
+    T56 = compose_T([
+        {"T": "R", "axis": "z", "angle": q5 + sp.pi/2},
+        {"T": "R", "axis": "x", "angle": sp.pi/2},
+    ])
+    T6e = compose_T([
+        {"T": "R", "axis": "z", "angle": q6},
+        {"T": "T", "axis": "z", "distance": l5+l6}
+    ])
+    return [T12, T23, T34, T45, T56, T6e]
 
-    # kinematic part
-    T12 = \
-        rot_symb_q("z", q1 + np.pi/2) * \
-        rot_symb_q("x", np.pi/2) * \
-        trans_num("y", l1)
+ts_dh = fk_dh_symb()
 
-    T23 = \
-        rot_symb_q("z", q2) * \
-        trans_symb_d("x", l2)
-
-    T34 = \
-        rot_symb_q("z", q3 - np.pi/2) * \
-        rot_symb_q("y", - np.pi/2) * \
-        trans_symb_d("y", l3)
-    
-    # wrist part
-    T45 = \
-        rot_symb_q("z", q4 + np.pi/2) * \
-        rot_symb_q("y", - np.pi/2) * \
-        trans_symb_d("y", l4)
-
-    T56 = \
-        rot_symb_q("z", q5 + np.pi/2) * \
-        rot_symb_q("x", np.pi/2) * \
-        trans_symb_d("z", l5)
-
-    T6e = \
-        rot_symb_q("z", q6) * \
-        trans_symb_d("z", l6)
-
-    Ts = [T12, T23, T34, T45, T56, T6e]
-
-    return Ts
-
-transformations = fk_solve_symb()
-
-def transform_base(base_frame):
-    return [base_frame] + transformations
-
-def fk_symb_ij(l: int, r: int, base_frame=sp.Identity(4)):
-    ts = transform_base(base_frame)[l:r+1]
-    for i in range(1,len(ts)):
-        ts[i] = ts[i-1] * ts[i]
-    return ts
+def transform_ij_sym(l, i, j):
+    x = sp.Identity(4)
+    for k in range(i,j+1):
+        x = x * l[k]
+    return x
 
 def FK_solve(q=fk_input, flag="ee"):
-    """Forward kinematics solver
+    ts_num = [np.array(ts[i].subs(qs[i], q[i]).evalf()).astype(np.float64) for i in range(len(fk_input))]
 
-    ----------
-    ### Parameters
-        `q` : `[q_i]`
-            6 joint coordinates
-        `flag` : `str`
-            defines output format
-
-
-    -------
-    ### Returns
-        if `flag == "ee"` then `np.array`
-            4x4 homogeneous T_{0}^{e}
-        if `flag == "full"` then `[np.array]`
-            list of 4x4 homogeneous T_{0}^{i}
-    """
-    ts = fk_symb_ij(0, 6)
-    a1, a2, a3, a4, a5, a6 = fk_input
-    subs = [(q1,a1),(q2,a2),(q3,a3),(q4,a4),(q5,a5),(q6,a6)]
-    
+    for i in range(1, len(ts_num)):
+        ts_num[i] = np.dot(ts_num[i-1], ts_num[i])
     if flag == "ee":
-        return np.array(ts[-1].subs(subs).evalf()).astype(np.float64)
-    
+        return ts_num[-1]
     elif flag == "full":
-        return np.array(ts.subs(subs).evalf()).astype(np.float64)
+        return ts_num
 
-print(FK_solve())
+base_default = sp.Identity(4)
+ee_default = FK_solve()
 
-# sp.pprint(fk_symb_ij(4, 6), num_columns = 100)
-# print(fk_symb_ij(4, 6))
+# sp.pprint(transform_ij_sym(l=ts, i=0, j=2), num_columns = 180)
+from scipy.optimize import fsolve
 
-# def IK_solve(base_frame, ee_frame):
-#     """Inverse kinematics solver
+# def f14(x):
+#     return [
+#         -np.sin(x[0])*np.sin(x[1])*np.sin(x[2]) + np.sin(x[0])*np.cos(x[1])*np.cos(x[2]) + np.sin(x[0])*np.cos(x[1]) + 0.339421405717406,
+#         np.sin(x[1])*np.sin(x[2])*np.cos(x[0]) - np.cos(x[0])*np.cos(x[1])*np.cos(x[2]) - np.cos(x[0])*np.cos(x[1]) - 0.728718482386846,
+#         -np.sin(x[1])*np.cos(x[2]) - np.sin(x[1]) - np.sin(x[2])*np.cos(x[1]) + 0.492903383442055
+#     ]
+# root = fsolve(f14, [0.2,0.3,0.9])
+# print(root)
 
-#     ----------
-#     ### Parameters
-#         `base_frame` : `np.array`
-#             4x4 homogeneous transformation matrix representing robot base
-#         `ee_frame` : `np.array`
-#             4x4 homogeneous transformation matrix representing end effector pose
+def ik(ee = ee_default, base_frame = base_default):
+    # ee = np.linalg.inv(base_default).dot(ee)
+    # T14
+    x,y,z = sp.symbols('x y z')
+    t14 = transform_ij_sym(l=ts, i=0, j=2)
+    # .subs([(q1,x),(q2,y),(q3,z)])
+    # t4e = transform_ij_sym(l=ts, i=3, j=5)
+    pc = ee[:3,3] - np.linalg.norm(ee[:3,3])*ee[:3,2]
+    t14_transl = sp.transpose(t14[:3,3])
+    eqs = [(pc[i]-t14_transl[i]) for i in range(3)]
+    # print(eqs)
+    q123 = sp.solve(eqs, [q2, q3])
+    print(q123)
+
+    # print(q123)
+
+# for i in range(4):
+#     for j in range(4):
+#         print(f"T_{i}_{j}: {t13[i,j]}")
+
+ik()
+
+# def IK_solve(base_frame=base_default, ee_frame=ee_default):
+    # """Inverse kinematics solver
+
+    # ----------
+    # ### Parameters
+    #     `base_frame` : `np.array`
+    #         4x4 homogeneous transformation matrix representing robot base
+    #     `ee_frame` : `np.array`
+    #         4x4 homogeneous transformation matrix representing end effector pose
+
+    # -------
+    # ### Returns
+    #     `[np.array]`
+    #         list of all possible solutions
+    # """
+    # T04 = fk_symb_ij(0, 3)[-1]
+    # T4e = fk_symb_ij(4, 6)[-1]
+    # T0e = T04 * T4e
+    
+    # N = CoordSys3D('N')
+    # v1 = T0e[0,3] * N.i + T0e[1,3] * N.j + T0e[2,3] * N.k
+    # v2 = T0e[0,2] * N.i + T0e[1,2] * N.j + T0e[2,2] * N.k
+    # Pc = v1 - v1.cross(v2)
+
+    # system = [
+    #     Pc.dot(N.i) - T04[0,3], 
+    #     Pc.dot(N.j) - T04[1,3], 
+    #     Pc.dot(N.k) - T04[2,3], 
+    # ]
+
+    # print(system)
+
+    # kinem_sol = nonlinsolve([
+    #     Pc.dot(N.i) - T04[0,3], 
+    #     Pc.dot(N.j) - T04[1,3], 
+    #     Pc.dot(N.k) - T04[2,3], 
+    # ],
+    # [
+    #     q1, q2, q3
+    # ]
+    # )
+    
+    # print(kinem_sol)
+    # wrist_sol = nonlinsolve([
+
+    # ])
 
 
-#     -------
-#     ### Returns
-#         `[np.array]`
-#             list of all possible solutions
-#     """
+# # IK_solve()
+
+# print(fk_symb_ij(0,3)[-1])
+
+
     
     
 
-# def select_similar():
-#     # selects the ik solution that is the most similar to given input
-#     pass
+# # def select_similar():
+# #     # selects the ik solution that is the most similar to given input
+# #     pass
 
-# def check_solvers(base_frame, ee_frame):
-#     # solve IK
-#     # solve FK with base frame for each IK solution
-#     pass
+# # def check_solvers(base_frame, ee_frame):
+# #     # solve IK
+# #     # solve FK with base frame for each IK solution
+# #     pass
