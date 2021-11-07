@@ -170,7 +170,7 @@ def get_q123(a, b, c):
     
     def go_m1_m3(s1, m3):
         p = np.arctan2((c-1) * m3, -a / s1 * m3)
-        q3 = np.arccos(-a/(2 * s1 * np.cos(p)))
+        q3 = 2*np.arccos(-a/(2 * s1 * np.cos(p)))
         if np.cos(q3/2) * m3 > 0:
             q2 = (2 * p - q3)/2
             return [[q2, q3]]
@@ -178,7 +178,7 @@ def get_q123(a, b, c):
 
     def go_m1_0_m3(m3):
         p = np.arctan2((c-1) * m3, b * m3)
-        q3 = np.arccos(b/(2 * np.cos(p)))
+        q3 = 2*np.arccos(b/(2 * np.cos(p)))
         if np.cos(q3/2) * m3 > 0:
             q2 = (2 * p - q3)/2
             return [[q2, q3]]
@@ -238,6 +238,7 @@ def get_q(q123, W):
     return go()
 
 def check_q(q1, q2, q3):
+    # print(q1,q2,q3)
     a = -np.sin(q1)*(np.cos(q2)+np.cos(q2+q3))
     b = np.cos(q1)*(np.cos(q2)+np.cos(q2+q3))
     c = np.sin(q2) + np.sin(q2+q3) + 1
@@ -258,11 +259,11 @@ def ik(ee = ee_default, base_frame = base_default):
     pc = ee[:3,3] - np.linalg.norm(ee[:3,3])*ee[:3,2]
 
     # Step 4
-    print(f"Pc:{pc}")
+    # print(f"Pc:{pc}")
     q123 = get_q123(*pc)
     
-    for i in q123:
-        check_q(*i)
+    # for i in q123:
+    #     check_q(*i)
     # Step 5
     T4e_s = get_T4e_s(q123, ee)
     
@@ -271,13 +272,13 @@ def ik(ee = ee_default, base_frame = base_default):
     qs = q123
     return qs
     
-ik()
+# ik()
 
 def check():
     qs = ik()
     for i,j in enumerate(qs):
-        pass
+        # pass
         # print(f"{i}:\n{FK_solve(j[:3])[:3,3]}")
-        # print(f"{i:}\n{FK_solve(j)}")
+        print(f"{i:}\n{FK_solve(j)}")
     
-# check()
+check()
