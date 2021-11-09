@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import sympy as sp
 from sympy.core.symbol import symbols
@@ -5,61 +6,75 @@ from sympy.printing.rcode import print_rcode
 
 link_lengths = [1,1,1,1,1,1]
 fk_input = [0.1,0.1,0.1,0.1,0.1,0.1]
-fk_input_1 = np.zeros(6)
+fk_input_init = np.zeros(6)
 # rotation matrices
 q = sp.Symbol('q')
 c = sp.cos(q)
 s = sp.sin(q)
 
-rot_symb = {
-    "z": sp.Matrix([
-            [c, -s, 0],
-            [s, c, 0],
-            [0, 0, 1]
-        ]),
-    "y": sp.Matrix([
-            [c, 0, s],
-            [0, 1, 0],
-            [-s, 0, c]
-        ]),
-    "x": sp.Matrix([
-            [1, 0, 0],
-            [0, c, -s],
-            [0, s, c]
-        ]),
-    }
+def get_rot_symb():
+    R = {
+        "z": sp.Matrix([
+                [c, -s, 0],
+                [s, c, 0],
+                [0, 0, 1]
+            ]),
+        "y": sp.Matrix([
+                [c, 0, s],
+                [0, 1, 0],
+                [-s, 0, c]
+            ]),
+        "x": sp.Matrix([
+                [1, 0, 0],
+                [0, c, -s],
+                [0, s, c]
+            ]),
+        }
 
-# insert 3x3 rotation matrix into homogeneous 4x4
-for axis, rot33 in rot_symb.items():
-    T = sp.Matrix(sp.Identity(4))
-    T[:3,:3] = rot_symb[axis]
-    rot_symb[axis] = T
+    RH = {}
 
-# translation matrices
+    # insert 3x3 rotation matrix into homogeneous 4x4
+    for axis, rot33 in R.items():
+        t = sp.Matrix(sp.Identity(4))
+        t[:3,:3] = rot33
+        RH[axis] = t
+    
+    return RH
+
+rot_symb = get_rot_symb()
+
 d = sp.Symbol('d')
-trans_symb = {
-    "z": sp.Matrix([
-            [0],
-            [0],
-            [d]
-        ]),
-    "y": sp.Matrix([
-            [0],
-            [d],
-            [0]
-        ]),
-    "x": sp.Matrix([
-            [d],
-            [0],
-            [0]
-        ]),
-    }
 
-# insert 3x1 translation matrix into homogeneous 4x4
-for axis, trans31 in trans_symb.items():
-    T = sp.Matrix(sp.Identity(4))
-    T[:3,3] = trans_symb[axis]
-    trans_symb[axis] = T
+def get_trans_symb():
+    # translation matrices
+    T = {
+        "z": sp.Matrix([
+                [0],
+                [0],
+                [d]
+            ]),
+        "y": sp.Matrix([
+                [0],
+                [d],
+                [0]
+            ]),
+        "x": sp.Matrix([
+                [d],
+                [0],
+                [0]
+            ]),
+        }
+
+    TH = {}
+    # insert 3x1 translation matrix into homogeneous 4x4
+    for axis, trans31 in T.items():
+        t = sp.Matrix(sp.Identity(4))
+        t[:3,3] = trans31
+        TH[axis] = t
+    
+    return TH
+
+trans_symb = get_trans_symb()
 
 qs = sp.symbols('q1 q2 q3 q4 q5 q6')
 q1, q2, q3, q4, q5, q6 = qs
@@ -79,68 +94,53 @@ def get_T(args):
         args.pop("T", None)
         return translate_symbolic(**args)
 
-def compose_T(args):
+def compose_T_symb(args):
     t = [get_T(arg) for arg in args]
     for i in range(1, len(t)):
         t[i] = t[i-1] * t[i]
     return t[-1]
 
-def fk_symb():
-    T12 = compose_T([
+def get_fk_symb():
+    T12 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q1 + sp.pi/2},
         {"T": "R", "axis": "x", "angle": sp.pi/2},
         {"T": "T", "axis": "y", "distance": l1}
     ])
-    T23 = compose_T([
+    T23 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q2},
         {"T": "T", "axis": "x", "distance": l2}
     ])
-    T34 = compose_T([
+    T34 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q3 - sp.pi/2},
         {"T": "R", "axis": "y", "angle": -sp.pi/2},
         {"T": "T", "axis": "y", "distance": l3}
     ])
-    T45 = compose_T([
+    T45 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q4 + sp.pi/2},
         {"T": "R", "axis": "x", "angle": sp.pi/2},
         {"T": "T", "axis": "y", "distance": l4}
     ])
-    T56 = compose_T([
+    T56 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q5 + sp.pi/2},
         {"T": "R", "axis": "x", "angle": sp.pi/2},
         {"T": "T", "axis": "z", "distance": l5}
     ])
-    T6e = compose_T([
+    T6e = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q6},
         {"T": "T", "axis": "z", "distance": l6}
     ])
     return [T12, T23, T34, T45, T56, T6e]
 
-ts = fk_symb()
+ts = get_fk_symb()
 
-def transform_ij_symb(l, i, j):
+def transform_ij_symb(i=0, j=5, l=ts):
     x = sp.Identity(4)
     for k in range(i,j+1):
         x = x * l[k]
     return x
 
-def num_T(T):
-    return np.array(compose_T(T).evalf()).astype(np.float64)
-
-def check_transform():
-    T4e = num_T([
-        {"T": "R", "axis": "x", "angle": -sp.pi/2},
-        {"T": "R", "axis": "z", "angle": -sp.pi/2},
-    ])
-    T5 = num_T([
-        {"T": "T", "axis": "x", "distance": l4},
-    ])
-    i = np.linalg.inv(T4e.dot(T5))
-    pt = np.array([0,2,2,1])
-    # print(T4e.dot(i).dot(pt))
-    # print(np.linalg.inv(t).dot(swap_axes.dot(np.array([0,2,2,1]))))
-
-check_transform()
+def compose_T_num(T):
+    return np.array(compose_T_symb(T).evalf()).astype(np.float64)
 
 def FK_solve(q=fk_input, flag="ee", ts=ts, qs=qs):
     ts_num = [np.array(ts[i].subs(qs[i], q[i]).evalf()).astype(np.float64) for i in range(len(q))]
@@ -201,14 +201,10 @@ def get_q123(a, b, c):
     
     return go(1) + go(-1)
 
-
-# print(get_q123(0,2,1))
-# 1T4 and 4Te symbolical representation
+# 1T4 symbolical representation
 t14 = sp.simplify(transform_ij_symb(l=ts, i=0, j=2))
-# print(latex(t14[:3,3]))
+# 4Te symbolical representation
 t4e = sp.simplify(transform_ij_symb(l=ts, i=3, j=5))
-# print(latex(sp.simplify(t4e[:3,:3])))
-# print(FK_solve(fk_input[:4]))
 
 def get_R4e_s(angles, ee):
     global q1, q2, q3
@@ -242,14 +238,20 @@ def get_q(q123, W):
 
     return go()
 
-def check_q(q1, q2, q3):
-    a = -np.sin(q1)*(np.cos(q2)+np.cos(q2+q3))
-    b = np.cos(q1)*(np.cos(q2)+np.cos(q2+q3))
-    c = np.sin(q2) + np.sin(q2+q3) + 1
-    return a,b,c
-
 def transform_base(trans=base_default,q=fk_input,flag="ee"):
     return trans.dot(FK_solve(q,flag))
+
+def get_pc(ee):
+    R4e = compose_T_num([
+        {"T": "R", "axis": "x", "angle": -sp.pi/2},
+        {"T": "R", "axis": "z", "angle": -sp.pi/2},
+    ])
+    T4e = compose_T_num([
+        {"T": "T", "axis": "x", "distance": l4},
+        {"T": "T", "axis": "z", "distance": l5+l6},
+    ])
+    Te4 = np.linalg.inv(R4e.dot(T4e))
+    return (R4e.dot(Te4).dot(ee))[:3,3]
 
 def IK_solve(ee = ee_default, base_frame = base_default):
     # Step 1
@@ -261,21 +263,12 @@ def IK_solve(ee = ee_default, base_frame = base_default):
     t4e
     
     # Step 3
-    pc = ee[:3,3] - (l5+l6) * ee[:3,2]
-    R4e = num_T([
-        {"T": "R", "axis": "x", "angle": -sp.pi/2},
-        {"T": "R", "axis": "z", "angle": -sp.pi/2},
-    ])
-    T45d = num_T([
-        {"T": "T", "axis": "x", "distance": l4},
-    ])
-    i = np.linalg.inv(R4e.dot(T45d))
-    pt = np.array([0,2,2,1])
-    pc = R4e.dot(i).dot(pt)[:3]
+    pc = get_pc(ee)
+    print(pc)
 
     # Step 4
     q123 = get_q123(*pc)
-    
+
     # Step 5
     R4e_s = get_R4e_s(q123, ee[:3,:3])
     
@@ -286,7 +279,7 @@ def IK_solve(ee = ee_default, base_frame = base_default):
 
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 def plot_manipulator(qs):
     t = np.array([np.zeros(3)] + [i[:3,3] for i in FK_solve(q=qs, flag="full")])
 
@@ -297,24 +290,29 @@ def plot_manipulator(qs):
     ax.set_ylabel('$Y$')
     plt.show()
 
-def check():
-    # Please, run this
-    # IDK why there is no input similar to my fk_input
-    # that's why, I don't return a list that corresponds to my input 
-    # Also, the last column is mysteriously non-equal to the expected output
-    
-    print(f"T1e:\n{FK_solve(fk_input)}")
-    
-    qs = IK_solve()
+def check_IK(q=fk_input, r=len(fk_input)):
+    ee = FK_solve(q=q)
+    qs = IK_solve(ee=ee)
+
+    fk = FK_solve(q=q[:r])
+    print(f"FK:\n{fk}")
     for i,j in enumerate(qs):
-        print(f"{i}: {j}\n{transform_base(trans=base_default, q=j)}")
-        # plot_manipulator(qs)
+        print(f"{i}:{j[:r]}\n{transform_base(q=j[:r])}")
 
-check()
+def check_pc():
+    pc = get_pc(FK_solve(q=fk_input_init)[:,3][:, np.newaxis])
+    print(pc)
 
-def check_move(qs=fk_input):
-    t = FK_solve(qs)
-    print(t[:3,3]-(l5+l6)*(t[:3,2]))
+def check_transform_4e():
+    t = FK_solve(q=fk_input_init[3:])
 
-# check_move(qs=fk_input_1)
-# IK_solve(FK_solve(q=fk_input_1))
+    S = compose_T_num([
+        {"T": "R", "axis": "x", "angle": -sp.pi/2},
+        {"T": "R", "axis": "z", "angle": -sp.pi/2},
+    ])
+    print(S, t)
+
+
+# check_pc()
+check_IK(fk_input_init, 3)
+# check_transform_4e()
