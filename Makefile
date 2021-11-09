@@ -9,5 +9,5 @@ setup: requirements.txt
 # activate environment: https://docs.python.org/3/tutorial/venv.html
 
 clean:
-	rm -rf __pycache__
-	rm -rf $(VENV)
+	rm -R __pycache__
+	rm -R $(VENV)
