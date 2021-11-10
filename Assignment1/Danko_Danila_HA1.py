@@ -7,12 +7,14 @@ from sympy.printing.rcode import print_rcode
 link_lengths = [1,1,1,1,1,1]
 fk_input = [0.1,0.1,0.1,0.1,0.1,0.1]
 fk_input_init = np.zeros(6)
-# rotation matrices
 q = sp.Symbol('q')
 c = sp.cos(q)
 s = sp.sin(q)
 
 def get_rot_symb():
+    """
+    produce dicts of rotation matrices
+    """
     R = {
         "z": sp.Matrix([
                 [c, -s, 0],
@@ -46,7 +48,9 @@ rot_symb = get_rot_symb()
 d = sp.Symbol('d')
 
 def get_trans_symb():
-    # translation matrices
+    """
+    produce dicts of translation matrices
+    """
     T = {
         "z": sp.Matrix([
                 [0],
@@ -80,27 +84,28 @@ symb_qs = sp.symbols('q1 q2 q3 q4 q5 q6')
 q1, q2, q3, q4, q5, q6 = symb_qs
 l1, l2, l3, l4, l5, l6 = link_lengths
 
-def rotate_symbolic(axis, angle):
-    return rot_symb[axis].subs(q, angle)
-
-def translate_symbolic(axis, distance):
-    return trans_symb[axis].subs(d, distance)
-
 def get_T(args):
+    """
+    get symbolic transformation matrix depending on the type of transformation
+    """
     if args["T"] == "R":
-        args.pop("T", None)
-        return rotate_symbolic(**args)
+        return rot_symb[args["axis"]].subs(q, args["angle"])
     elif args["T"] == "T":
-        args.pop("T", None)
-        return translate_symbolic(**args)
+        return trans_symb[args["axis"]].subs(d, args["distance"])
 
 def compose_T_symb(args):
+    """
+    compose a symbolic transformation from a list of transformations
+    """
     t = [get_T(arg) for arg in args]
     for i in range(1, len(t)):
         t[i] = t[i-1] * t[i]
     return t[-1]
 
 def get_fk_dh():
+    """
+    produce a list of Tii+1 for DH parameterization
+    """
     T12 = compose_T_symb([
         {"T": "R", "axis": "z", "angle": q1},
         {"T": "T", "axis": "z", "distance": l1},
@@ -170,9 +175,9 @@ from sympy.printing import latex
 
 eps = 0.000000001
 
-# 1T4 symbolical representation
+# T14 symbolic representation
 t14 = sp.simplify(transform_ij_symb(l=ts_dh, i=0, j=2))
-# 4Te symbolical representation
+# T4e symbolic representation
 t4e = sp.simplify(transform_ij_symb(l=ts_dh, i=3, j=5))
 
 def eq(a,b):
@@ -307,13 +312,14 @@ def filter_sols(qs=[fk_input],ts=ts_dh, ee=ee_default):
 
 
 def IK_solve(ee = ee_default, base_frame = base_default, ts=ts_dh):
+    """
+    get a list of solutions to IK problem for a given base frame and end effector frame
+    """
     # Step 1
-    # move base
+    # move base to origin
     ee = np.linalg.inv(base_frame).dot(ee)
     
     # Step 2
-    t14
-    t4e
     
     # Step 3
     pc = ee[:3,3] - (l5+l6)*ee[:3,2]
@@ -333,6 +339,9 @@ def IK_solve(ee = ee_default, base_frame = base_default, ts=ts_dh):
 
 import matplotlib.pyplot as plt
 def plot_manipulator(qs, ts=ts_dh):
+    """
+    plot a manipulator with given joint angles
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -349,16 +358,28 @@ def plot_manipulator(qs, ts=ts_dh):
     plt.show()
 
 def latex_r_ij(l=ts_dh,i=0,j=3):
+    """
+    print Latex representation of symbolic Tij
+    """
     print(latex(sp.simplify(transform_ij_symb(l=l, i=i, j=j)[:3,:3])))
 
 def num_ij(l=ts_dh, i=0, j=3, qs=symb_qs, q=fk_input):
+    """
+    print numeric representation of Tij
+    """
     subs = [(i,j) for i,j in zip(qs, q)]
     print(np.array(transform_ij_symb(l=ts_dh,i=i,j=j).subs(subs)).astype(np.float64))
 
 def eq_matrix(a, b):
+    """
+    compare if matrices are equal with eps precision
+    """
     return np.abs(np.sum((a-b).flatten())) < eps
 
 def check_IK(q=fk_input, r=len(fk_input), ts=ts_dh):
+    """
+    print IK solutions
+    """
     ee = FK_solve(qs=q, ts=ts)
     qs = IK_solve(ee=ee)
 
@@ -368,17 +389,16 @@ def check_IK(q=fk_input, r=len(fk_input), ts=ts_dh):
         print(f"{i}:{j[:r]}\n{transform_base(q=j[:r])}")
 
 def get_sols(ts=ts_dh,qs=fk_input):
+    """
+    returns a list of IK solutions for a given set of joint angles
+    """
     t = IK_solve(ee=FK_solve(qs=qs,ts=ts),ts=ts)
     return t
 
-# plot_manipulator(get_sols(qs=fk_input_init))
-
-# fk_input_1 = np.zeros(6)
-# fk_input_1[0] = 2 * np.pi / 6
-# fk_input_2 = np.zeros(6)
-# fk_input_2[0] = 2
-# plot_manipulator([fk_input_1])
 def plot_range_step(rng = 2*np.pi, n=10):
+    """
+    make funny umbrellas via rotating the first joint
+    """
     ps = [0. for _ in range(5)]
     sols = []
     for i in range(n):
@@ -386,14 +406,4 @@ def plot_range_step(rng = 2*np.pi, n=10):
         sols += get_sols(qs=[i * step] + ps)
     plot_manipulator(sols)
 
-# plot_range_step()
-# plot_manipulator(get_sols(qs=fk_input_2) + get_sols(qs=fk_input_init) + get_sols(qs=fk_input_1))
-
-# IK_solve()
-# check_pc()
-# check_IK(q=fk_input, ts=ts_dh, r=6)
-# check_transform_4e()
-# latex_r_ij(l=ts_dh,i=3,j=5)
-
-# print(get_q123(2,0,2))
-# num_ij(qs=qs[3:],q=fk_input[3:],i=3,j=5)
+# plot_range_step(n=30)
