@@ -100,7 +100,7 @@ def compose_T_symb(args):
     t = [get_T(arg) for arg in args]
     for i in range(1, len(t)):
         t[i] = t[i-1] * t[i]
-    return t[-1]
+    return sp.simplify(t[-1])
 
 def get_fk_dh():
     """
@@ -406,4 +406,69 @@ def plot_range_step(rng = 2*np.pi, n=10):
         sols += get_sols(qs=[i * step] + ps)
     plot_manipulator(sols)
 
+
+def get_transformation_parts(W):
+    x, y, z = sp.symbols("x y z")
+    Rx = compose_T_symb([{"T": "R", "axis": "x", "angle": q1},])
+    Ry = compose_T_symb([{"T": "R", "axis": "y", "angle": q2},])
+    Rz = compose_T_symb([{"T": "R", "axis": "z", "angle": q3},])
+
+    Rot = Rx * Ry * Rz
+
+    Trans = compose_T_symb([
+        {"T": "T", "axis": "x", "distance": x},
+        {"T": "T", "axis": "y", "distance": y},
+        {"T": "T", "axis": "z", "distance": z},
+    ])
+
+    T = Trans * Rot
+
+    # print(latex(T[:3,:3]))
+
+    def go(m2):
+        if eq(np.abs(W[0,2]),0):
+            return [[]]
+        q3 = np.arctan2(-W[0,1]*m2, W[0,0]*m2)
+        c3 = np.cos(q3)
+        if not eq(c3, 0):
+            q2 = np.arctan2(W[0,2], W[0,0]/c3)
+            c2 = np.cos(q2)
+            q1 = np.arctan2(-W[1,2]/c2, W[2,2]/c2)
+            return [[q1, q2, q3]]
+        else:
+            s3 = np.sin(q3)
+            q2 = np.arctan2(W[0,2], W[0,1]/-s3)
+            c2 = np.cos(q2)
+            q1 = np.arctan2(-W[1,2]/c2, W[2,2]/c2)
+            return [[q1, q2, q3]]
+
+    q123 = go(-1) + go(1)
+
+    def num_matrix(T,q,p):
+        return np.array(T.subs(q,p).evalf()).astype(np.float64)
+
+    ret = []
+    for p1,p2,p3 in q123:
+        subs = [(q1, p1), (q2, p2), (q3, p3)]
+        R = np.array(Rot.subs(subs).evalf()).astype(np.float64)
+        ret += [(W[0,3], W[1,3], W[2,3], num_matrix(Rx, q1, p1), num_matrix(Ry,q2,p2), num_matrix(Rz,q3,p3))]
+    
+    for x,y,z,rx,ry,rz in ret:
+        r = np.linalg.multi_dot([rx,ry,rz])
+        r[:3,3] = np.array([x,y,z])
+        print(r)
+    
+    return ret
+
+T = compose_T_num([
+    {"T": "T", "axis": "x", "distance": 1},
+    {"T": "T", "axis": "y", "distance": 2},
+    {"T": "T", "axis": "z", "distance": 3},
+    {"T": "R", "axis": "x", "angle": 0.7},
+    {"T": "R", "axis": "y", "angle": 1.},
+    {"T": "R", "axis": "z", "angle": 0.5},
+])
+
+# print(T)
+[print(i) for i in get_transformation_parts(T)]
 # plot_range_step(n=30)
