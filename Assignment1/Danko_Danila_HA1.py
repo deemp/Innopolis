@@ -395,7 +395,7 @@ def get_sols(ts=ts_dh,qs=fk_input):
     t = IK_solve(ee=FK_solve(qs=qs,ts=ts),ts=ts)
     return t
 
-def plot_range_step(rng = 2*np.pi, n=10):
+def plot_umbrella(rng = 2*np.pi, n=10):
     """
     make funny umbrellas via rotating the first joint
     """
@@ -468,7 +468,8 @@ T = compose_T_num([
     {"T": "R", "axis": "y", "angle": 1.},
     {"T": "R", "axis": "z", "angle": 0.5},
 ])
-
 # print(T)
+
+# check_IK()
 # get_transformation_parts(T)
-# plot_range_step(n=30)
+# plot_umbrella(n=30)
