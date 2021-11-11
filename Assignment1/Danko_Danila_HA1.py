@@ -470,5 +470,5 @@ T = compose_T_num([
 ])
 
 # print(T)
-[print(i) for i in get_transformation_parts(T)]
+# get_transformation_parts(T)
 # plot_range_step(n=30)
