@@ -1,6 +1,6 @@
 import numpy as np
 import sympy as sp
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
 
 from sympy.utilities.lambdify import lambdify
 
@@ -10,8 +10,8 @@ np.set_printoptions(precision=2, suppress=True)
 dim_h = 4
 n = 6
 link_lengths = np.array([1,1,1,1,1,1])
-input = np.array([0.1,0.1,0.1,0.1,0.1,0.1])
-input_initial = np.array([0.,0.,0.,0.,0.,0.])
+q_final = np.array([2.5,1.8,3.14,4.6,2.1,1.1])
+q_initial = np.array([0.,0.,0.,0.,0.,0.])
 
 q = sp.Symbol('q')
 
@@ -169,7 +169,7 @@ def get_fk_symb():
 
 fk_symb = get_fk_symb()
 
-def get_fk_solution(qs=input, flag="ee"):
+def get_fk_solution(qs=q_final, flag="ee"):
     """
     numeric forward kinematics solution
     """
@@ -182,12 +182,12 @@ def get_fk_solution(qs=input, flag="ee"):
     elif flag == "full":
         return ts
 
-eps = 0.000000001
+eps = 0.00000000001
 
 def eq(a,b):
     return np.abs(a-b) < eps
 
-fk_full_default = get_fk_solution(qs=input_initial, flag="full")
+fk_full_default = get_fk_solution(qs=q_initial, flag="full")
 
 base_default = np.eye(dim_h)
 ee_default = fk_full_default[-1]
@@ -212,55 +212,63 @@ def check_singular(jacobian):
 def cartesian_velocity(jacobian, q_dot):
     return jacobian.dot(q_dot)
 
+
+from scipy.spatial.transform import Rotation as R
 def decompose_transformation(W): 
-    def go(m2):
-        if eq(np.abs(W[0,2]),0):
-            return [[]]
-        q3 = np.arctan2(-W[0,1]*m2, W[0,0]*m2)
-        c3 = np.cos(q3)
-        if not eq(c3, 0):
-            q2 = np.arctan2(W[0,2], W[0,0]/c3)
-            c2 = np.cos(q2)
-            q1 = np.arctan2(-W[1,2]/c2, W[2,2]/c2)
-            return [[q1, q2, q3]]
-        else:
-            s3 = np.sin(q3)
-            q2 = np.arctan2(W[0,2], W[0,1]/-s3)
-            c2 = np.cos(q2)
-            q1 = np.arctan2(-W[1,2]/c2, W[2,2]/c2)
-            return [[q1, q2, q3]]
-
-    q123 = go(-1) + go(1)
-
-    return [np.array([W[0,3], W[1,3], W[2,3]] + q) for q in q123]
+    r = R.from_matrix(W[:3,:3]).as_euler('xyz')
+    t = W[:3,3]
+    x = np.zeros(6)
+    x[:3] = t
+    x[3:] = r
+    return x
     
 
 t0 = 0
-tf = 10
-n_steps = 10000
-t = np.linspace(start=t0, stop=tf, num=n_steps)
-x_target_default = decompose_transformation(get_fk_solution(input))[0]
+tf = 50
+k = 0.01
 
-k = (tf-t0)/n_steps
+# print(decompose_transformation(get_fk_solution(q_initial)))
+x_target_default = decompose_transformation(get_fk_solution(q_final))
+# print(x_target_default)
+print("fk_final\n",get_fk_solution(q_final))
 
-def solve_motion(y0=input_initial,t=t, x1=x_target_default):
-    def state_space(y, t):
+def solve_motion(y0=q_initial,t=(t0,tf), x1=x_target_default):
+    print("x_targ:\n", x1)
+    def state_space(t, y):
         fk = get_fk_solution(y, flag="full")
         J = jacobian(frames=fk)
-        xi = decompose_transformation(fk[-1])[0]
+        xi = decompose_transformation(fk[-1])
         dx = (x1-xi)*k
         return J.dot(dx)
-    return odeint(func=state_space, y0=y0, t=t)
+    return solve_ivp(fun=state_space, y0=y0, t_span=t)
 
-sol = solve_motion().T
+sol = solve_motion()
 
+q_last = sol.y.T[-1]
+print("q_last\n",q_last)
+print("fk_last\n",get_fk_solution(q_last))
+
+t_len = sol.t.shape[0]
+p = np.zeros((t_len,3))
+for i in range(t_len):
+    p[i,:] = get_fk_solution(sol.y.T[i])[:3,3]
+# print(p.shape)
+# exit(0)
 from utils import plot_sol
+cartesian_labels = ["x", "y", "z", "\\theta_x", "\\theta_y", "\\theta_z"]
 plot_sol([
     {
-        "x": t,
+        "x": sol.t,
         "xlabel": "Time (s)",
-        "ylabel": "Joint angles (rad)",
-        "title" : "Joint angles changes during configuration change",
-        "graphs": [{"y": sol[i], "label": f"q_{i}"} for i in range(n)]
+        "ylabel": "Joint\\ angles (rad)",
+        "title" : "Change\\ of\\ joint\\ angles\\ between\\ configurations",
+        "graphs": [{"y": sol.y[i], "label": f"q_{i}"} for i in range(n)]
+    },
+    {
+        "x": sol.t,
+        "xlabel": "Time (s)",
+        "ylabel": "Position (m)",
+        "title" : "Change\\ of\\ EE\\ position\\ between\\ configurations",
+        "graphs": [{"y": p.T[i], "label": cartesian_labels[i]} for i in range(3)]
     }
 ])
