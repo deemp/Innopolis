@@ -4,6 +4,8 @@ import sympy as sp
 from sympy.core.symbol import symbols
 from sympy.printing.rcode import print_rcode
 
+np.set_printoptions(precision=2, suppress=True)
+
 link_lengths = [1,1,1,1,1,1]
 fk_input = [0.1,0.1,0.1,0.1,0.1,0.1]
 fk_input_init = np.zeros(6)
@@ -424,7 +426,7 @@ def get_transformation_parts(W):
     T = Trans * Rot
 
     # print(latex(T[:3,:3]))
-
+    
     def go(m2):
         if eq(np.abs(W[0,2]),0):
             return [[]]
@@ -453,12 +455,18 @@ def get_transformation_parts(W):
         R = np.array(Rot.subs(subs).evalf()).astype(np.float64)
         ret += [(W[0,3], W[1,3], W[2,3], num_matrix(Rx, q1, p1), num_matrix(Ry,q2,p2), num_matrix(Rz,q3,p3))]
     
-    for x,y,z,rx,ry,rz in ret:
+    return ret
+
+def check_transformation_parts(T):
+    ok = True
+    print(f"T:\n{T}")
+    parts = get_transformation_parts(T)
+    for x,y,z,rx,ry,rz in parts:
         r = np.linalg.multi_dot([rx,ry,rz])
         r[:3,3] = np.array([x,y,z])
-        print(r)
-    
-    return ret
+        print("r")
+        ok &= eq_matrix(r,T)
+    return ok
 
 T = compose_T_num([
     {"T": "T", "axis": "x", "distance": 1},
@@ -468,7 +476,8 @@ T = compose_T_num([
     {"T": "R", "axis": "y", "angle": 1.},
     {"T": "R", "axis": "z", "angle": 0.5},
 ])
-# print(T)
+
+print(check_transformation_parts(T))
 
 # check_IK()
 # get_transformation_parts(T)
