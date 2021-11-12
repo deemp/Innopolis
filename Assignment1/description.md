@@ -4,3 +4,4 @@
 * ![image](./interface.png)
 * [Report](https://www.mathcha.io/editor/e2X7rurQtZGIV9IpxlXQs3koNO6f99M7grC0Gmz7)
 * [Code](./)
+* [Project setup](../README.md#project-setup)
