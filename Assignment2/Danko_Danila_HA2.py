@@ -224,13 +224,13 @@ def decompose_transformation(W):
     
 
 t0 = 0
-tf = 50
+tf = 1000
 k = 0.01
 
 # print(decompose_transformation(get_fk_solution(q_initial)))
 x_target_default = decompose_transformation(get_fk_solution(q_final))
 # print(x_target_default)
-print("fk_final\n",get_fk_solution(q_final))
+# print("fk_final\n",get_fk_solution(q_final))
 
 def solve_motion(y0=q_initial,t=(t0,tf), x1=x_target_default):
     print("x_targ:\n", x1)
@@ -245,17 +245,24 @@ def solve_motion(y0=q_initial,t=(t0,tf), x1=x_target_default):
 sol = solve_motion()
 
 q_last = sol.y.T[-1]
-print("q_last\n",q_last)
-print("fk_last\n",get_fk_solution(q_last))
+# print("q_last\n",q_last)
+# print("fk_last\n",get_fk_solution(q_last))
 
 t_len = sol.t.shape[0]
 p = np.zeros((t_len,3))
 for i in range(t_len):
     p[i,:] = get_fk_solution(sol.y.T[i])[:3,3]
-# print(p.shape)
-# exit(0)
+
+
 from utils import plot_sol
-cartesian_labels = ["x", "y", "z", "\\theta_x", "\\theta_y", "\\theta_z"]
+labels = ["x", "y", "z", "\\theta_x", "\\theta_y", "\\theta_z"]
+target_labels = ["x", "y", "z", "\\hat{x}", "\\hat{y}", "\\hat{z}"]
+target_colors = ["r", "g", "b", "r", "g", "b"]
+x_target = np.full(shape=(t_len,3), fill_value=x_target_default[:3])
+# print(x_target.shape)
+# exit(0)
+y2 = [p.T[0], p.T[1], p.T[2], x_target.T[0], x_target.T[1], x_target.T[2]]
+
 plot_sol([
     {
         "x": sol.t,
@@ -269,6 +276,6 @@ plot_sol([
         "xlabel": "Time (s)",
         "ylabel": "Position (m)",
         "title" : "Change\\ of\\ EE\\ position\\ between\\ configurations",
-        "graphs": [{"y": p.T[i], "label": cartesian_labels[i]} for i in range(3)]
+        "graphs": [{"y": y2[i], "label": target_labels[i], "color": target_colors[i]} for i in range(len(y2))]
     }
 ])
