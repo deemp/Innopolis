@@ -252,7 +252,7 @@ x_target = np.full(shape=(t_len,6), fill_value=x_target_default)
 
 
 from utils import plot_sol
-labels = ["x", "y", "z", "\\theta_x", "\\theta_y", "\\theta_z"]
+labels = ["x (m)", "y (m)", "z (m)", "\\theta_x (rad)", "\\theta_y (rad)", "\\theta_z (rad)"]
 target_labels = ["\\hat{" + f"{i}" + "}" for i in labels]
 
 plot_sol([
@@ -261,7 +261,7 @@ plot_sol([
         "xlabel": "Time (s)",
         "ylabel": "Joint\\ angles (rad)",
         "title" : "Change\\ of\\ joint\\ angles\\ between\\ configurations",
-        "graphs": [{"y": sol.y[i], "label": f"q_{i}"} for i in range(n)]
+        "graphs": [{"y": sol.y[i], "label": f"q_{i+1}"} for i in range(n)]
     },
     {
         "x": sol.t,
