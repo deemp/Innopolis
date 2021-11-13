@@ -4,5 +4,5 @@
 * [Report](https://www.mathcha.io/editor/joqkPIyVUKLHNLCLy9ynptVqdxoycw1PnJMi1MOL5k)
 * [Code](./)
 * Implemented path planning :(
-    ![image](./path_planning_demo.png)
+    ![image](./path_demo.png)
 * [Project setup](../README.md#project-setup)

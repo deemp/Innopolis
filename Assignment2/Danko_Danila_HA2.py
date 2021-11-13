@@ -224,7 +224,7 @@ def decompose_transformation(W):
     
 
 t0 = 0
-tf = 1000
+tf = 500
 k = 0.01
 
 # print(decompose_transformation(get_fk_solution(q_initial)))
@@ -239,29 +239,21 @@ def solve_motion(y0=q_initial,t=(t0,tf), x1=x_target_default):
         J = jacobian(frames=fk)
         xi = decompose_transformation(fk[-1])
         dx = (x1-xi)*k
-        return J.dot(dx)
+        return np.linalg.inv(J).dot(dx)
     return solve_ivp(fun=state_space, y0=y0, t_span=t)
 
 sol = solve_motion()
 
-q_last = sol.y.T[-1]
-# print("q_last\n",q_last)
-# print("fk_last\n",get_fk_solution(q_last))
-
 t_len = sol.t.shape[0]
-p = np.zeros((t_len,3))
+x_current = np.zeros((t_len,6))
 for i in range(t_len):
-    p[i,:] = get_fk_solution(sol.y.T[i])[:3,3]
+    x_current[i,:] = decompose_transformation(get_fk_solution(sol.y.T[i]))
+x_target = np.full(shape=(t_len,6), fill_value=x_target_default)
 
 
 from utils import plot_sol
 labels = ["x", "y", "z", "\\theta_x", "\\theta_y", "\\theta_z"]
-target_labels = ["x", "y", "z", "\\hat{x}", "\\hat{y}", "\\hat{z}"]
-target_colors = ["r", "g", "b", "r", "g", "b"]
-x_target = np.full(shape=(t_len,3), fill_value=x_target_default[:3])
-# print(x_target.shape)
-# exit(0)
-y2 = [p.T[0], p.T[1], p.T[2], x_target.T[0], x_target.T[1], x_target.T[2]]
+target_labels = ["\\hat{" + f"{i}" + "}" for i in labels]
 
 plot_sol([
     {
@@ -274,8 +266,10 @@ plot_sol([
     {
         "x": sol.t,
         "xlabel": "Time (s)",
-        "ylabel": "Position (m)",
-        "title" : "Change\\ of\\ EE\\ position\\ between\\ configurations",
-        "graphs": [{"y": y2[i], "label": target_labels[i], "color": target_colors[i]} for i in range(len(y2))]
+        "ylabel": "Pose",
+        "title" : f"Change\\ of\\ EE\\ pose\\ between\\ configurations $ \n target: {x_target_default} $\\ ",
+        "graphs": 
+            [{"y": x_current.T[i], "label": labels[i]} for i in range(n)] + []
+            # [{"y": x_target.T[i], "label": target_labels[i]} for i in range(n)]
     }
 ])
