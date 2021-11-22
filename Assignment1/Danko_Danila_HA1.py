@@ -1,4 +1,3 @@
-import re
 import numpy as np
 import sympy as sp
 from sympy.core.symbol import symbols
