@@ -253,9 +253,10 @@ def trapezoid_p2p(q_params_list, t0_list):
 
 #%%
 
-# 1 & 2
+# Tasks 1 & 2
 
 # Suppose each joint has q_params and t0
+
 #%%
 
 q_params_list = np.array(
@@ -386,3 +387,47 @@ def get_cubic_data(t_list, q_list, dqs, N):
 x,y = get_cubic_data(t_list, q_list, dqs, N)
 fig, ax = plt.subplots()
 ax.plot(x,y)
+
+#%% 
+
+
+# Tasks 5
+
+# I assume that points are given in the joint space
+
+#%%
+
+def get_joint_trajectories(ts, qs, dqs, N):
+  return np.array([get_cubic_data(ts,i,j,N) for i,j in zip(qs,dqs)])
+
+
+np.random.seed(42)
+qs = [np.random.uniform(size=3, low=-np.pi, high=np.pi) for i in range(6)]
+ts = np.sort(np.random.uniform(size=3, low=0, high = 10))
+dqs = [np.random.uniform(low=-5, high=5,size=2) for i in range(6)]
+
+trs = get_joint_trajectories(ts, qs, dqs, N)
+
+labels = [f'{i}' for i in range(1,7)]
+xs = trs[0,0]
+
+# print(qs)
+#%%
+
+# Plot trajectory between points
+
+fig, ax = plt.subplots()
+
+for i in range(6):
+  ax.plot(xs, trs[i,1], label=labels[i])
+  ax.scatter(ts, qs[i])
+  ax.set_xlabel("$t$ [s]")
+  ax.set_ylabel("$q$ [$rad$]")
+
+fig.suptitle("Trajectory btw 3 points\n in the joint space")
+fig.set_figwidth(10)
+fig.set_figheight(7)
+ax.legend()
+
+plt.show()
+# %%
