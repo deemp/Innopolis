@@ -16,6 +16,8 @@
 * [Assignment 3](./Assignment3/description.md)
 
 ## Project setup
+* Use VS Code with Python extension and Jupyter kernel
+
 * Install [Miniconda](https://conda.io/en/latest/miniconda.html)
 
 * Create [environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)
