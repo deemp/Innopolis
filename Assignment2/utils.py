@@ -262,10 +262,11 @@ def eq(a,b):
 
 
 def decompose_transformation(W): 
-    """decompose a rotation matrix into XYZ euler angles"""
+    """decompose a rotation matrix into translation xyz and XYZ euler angles"""
     r = R.from_matrix(W[:3,:3]).as_euler('xyz')
     t = W[:3,3]
     x = np.zeros(6)
     x[:3] = t
     x[3:] = r
     return x
+    

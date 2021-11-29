@@ -391,7 +391,7 @@ ax.plot(x,y)
 #%% 
 
 
-# Tasks 5
+# Task 5
 
 # I assume that points are given in the joint space
 
@@ -430,4 +430,87 @@ fig.set_figheight(7)
 ax.legend()
 
 plt.show()
+# %%
+
+# Main tasks
+
+# %%
+
+import sympy as sp
+import numpy as np
+import matplotlib.pyplot as plt
+
+def solve_splines(x, y):
+  """
+  t_list: list of 3 moments at which given angles should be reached
+  q_list: list of 3 angles that are needed to reach
+
+  Output: 
+  t: list of time steps
+  q: list of joint positions after synchronization [[q1], [q2] ...[qn]]
+  dq, ddq: list of lists of joint velocities and accelerations in the same format as q
+  """
+  
+  # initial and final velocities are zero
+  # initial and final accelerations are zero
+  # hence, can use https://en.wikipedia.org/wiki/Spline_(mathematics)#Algorithm_for_computing_natural_cubic_splines
+  
+  n = len(x)-1
+  a = np.array(y)
+  
+  b = np.zeros(n)
+  
+  d = np.zeros(n)
+  
+  h = np.array([x[i+1] - x[i] for i in range(n)])
+  
+  alpha = np.zeros(n)
+  for i in range(1,n):
+    alpha[i] = 3 / h[i] * (a[i+1] - a[i]) - 3 / h[i-1] * (a[i] - a[i-1])
+
+  c, l, mu, z = np.zeros((4,n+1))
+  l[0] = 1
+
+  for i in range(1,n):
+    l[i] = 2 * (x[i+1] - x[i-1]) - h[i-1] * mu[i-1]
+    mu[i] = h[i] / l[i]
+    z[i] = (alpha[i] - h[i-1] * z[i-1]) / l[i]
+
+  l[n] = 1
+  z[n] = 0
+  c[n] = 0
+  
+  for j in range(n-1,-1,-1):
+    c[j] = z[j] - mu[j] * c[j+1]
+    b[j] = (a[j+1] - a[j]) / h[j] - h[j] * (c[j+1] + 2 * c[j]) / 3
+    d[j] = (c[j+1] - c[j]) / (3 * h[j])
+
+  return np.array([a[:n],b[:n],c[:n],d[:n],x])
+
+#%%
+
+def get_spline_traj_data(cs, N=100):
+  a,b,c,d,t = cs
+  ts = np.linspace(t[0], t[-1], N)
+  s = np.zeros(N)
+
+  j = 0
+  for i in range(N):
+    if ts[i] > t[j+1]:
+      j += 1
+    
+    s[i] = a[j] + b[j]*(ts[i]-t[j]) + c[j]*(ts[i]-t[j])**2 + d[j]*(ts[i]-t[j])**3
+  
+  return ts,s
+
+#%%
+
+
+t_list = [1.,3.,5.,7.,9.,11]
+q_list = [2.,3.,2.,3,-5,6]
+xs, ys = get_spline_traj_data(solve_splines(t_list, q_list))
+
+fig, ax = plt.subplots()
+ax.scatter(t_list, q_list)
+ax.plot(xs,ys)
 # %%
