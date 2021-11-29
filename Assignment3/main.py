@@ -308,6 +308,85 @@ plot_list([
   },
   ])
 
+#%%
+import sympy as sp
+
+def solve_cubic_3(t_list, q_list, dqs):
+  a13, a12, a11, a10 = sp.symbols("a13 a12 a11 a10")
+  a23, a22, a21, a20 = sp.symbols("a23 a22 a21 a20")
+  t1, t2, t3 = [sp.Matrix([j**i for i in range(3,-1,-1)]) for j in t_list]
+  q1, q2, q3 = q_list
+  v1, v3 = dqs
+
+  m1 = sp.Matrix([
+    [a13, a12,   a11,   a10],
+    [0,   3*a13, 2*a12, a11],
+  ])
+  c1 = sp.Matrix([q1, v1])
+
+  m2 = sp.Matrix([
+    [a23, a22,   a21,   a20],
+    [0,   3*a23, 2*a22, a21],
+  ])
+  c2 = sp.Matrix([q3, v3])
+
+  m3 = sp.Matrix([
+    [a13, a12,         a11,         a10        ],
+    [a23, a22,         a21,         a20        ],
+    [0,   3*(a13-a23), 2*(a12-a22),  a11-a21   ],
+    [0,   0,           6*(a13-a23), 2*(a12-a22)]
+  ])
+  c3 = sp.Matrix([q2,q2,0,0])
+
+  eq1 = m1 * t1 - c1
+  eq2 = m2 * t3 - c2
+  eq3 = m3 * t2 - c3
+
+  sol = sp.solve([eq1, eq2, eq3])
+  
+  coeffs = np.array([
+    [sol[a10], sol[a11], sol[a12], sol[a13]],
+    [sol[a20], sol[a21], sol[a22], sol[a23]]
+  ])
+  
+  return coeffs
+
+#%%
+
+# check solve_cubic_3
+
+q_list = [2.,3.,2.]
+t_list = [1.,3.,5.]
+dqs = [0., 0.]
+print(solve_cubic_3(t_list,q_list,dqs))
+
+#%%
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+q_list = [2.,3.,-4.]
+t_list = [1.,3.,5.]
+dqs = [0., 0.]
+N = 100
+
+def get_cubic_data(t_list, q_list, dqs, N):
+  # check solve_cubic_3
+  cs = solve_cubic_3(t_list, q_list, dqs)
+  xs = np.array([np.linspace(t_list[i], t_list[i+1], N) for i in range(2)])
+  ys = np.array([np.sum([xs[j]**i * cs[j,i] for i in range(4)], axis=0) for j in range(2)])
+  x = xs.ravel()
+  y = ys.ravel()
+  return x, y
+
+#%%
+
+# check get_cubic_data
+
+x,y = get_cubic_data(t_list, q_list, dqs, N)
+fig, ax = plt.subplots()
+ax.plot(x,y)
+
 # %%
 
 import sympy as sp
