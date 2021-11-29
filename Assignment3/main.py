@@ -318,6 +318,9 @@ def solve_3(q_list, t_list, dqs, ddqs):
   """
   q_list: list of 3 angles that are needed to reach
   t_list: list of 3 moments at which given angles should be reached
+  dqs: list with initial velocity and final velocity
+  ddqs: list with initial acceleration and final acceleration
+
 
   Output: 
   t: list of time steps
@@ -340,7 +343,7 @@ def solve_3(q_list, t_list, dqs, ddqs):
     [0,   0,           6*a13,       2*a12      ],
     [0,   3*(a13-a23), 2*(a12-a22), a11-a21    ],
     [0,   0,           6*(a13-a23), 2*(a12-a22)],
-    ])  
+    ])
   c1 = sp.Matrix([q1, dqs[0], ddqs[0], 0, 0])
   
   m2 = sp.Matrix([t1.T, t2.T])
@@ -374,21 +377,46 @@ def solve_3(q_list, t_list, dqs, ddqs):
   sol = sp.solve([eq1, eq2, eq3, eq4, eq5])
   print(sol)
 
-v1,v2 = sp.symbols("v1 v2")
-a1,a2 = sp.symbols("a1 a2")
-# v1,v2 = 1,-1
+# v1,v2 = sp.symbols("v1 v2")
+# a1,a2 = sp.symbols("a1 a2")
+# v1,v2 = 0,0
 # a1,a2 = 0,0
-q_list = [2.,3.,2.]
-t_list = [1.,2.,3.]
-
-# fig, ax = plt.subplots()
-# ax.scatter(t_list, q_list)
-# ax.plot([t_list[0],t_list[0]+0.1],[q_list[0],q_list[0]+a1*0.1])
-# ax.plot([t_list[2],t_list[2]+0.1],[q_list[2],q_list[2]+a2*0.1])
+q_list = [2.,3.,2.,3]
+t_list = [1.,3.,5.,7]
+from scipy.interpolate import CubicSpline
+cs = CubicSpline(t_list, q_list)
+fig, ax = plt.subplots()
+xs = np.arange(1, 7+0.1, 0.1)
+ax.scatter(t_list, q_list)
+ax.plot(xs,cs(xs))
 
 # for i in np.arange(0,3,0.02):
-solve_3(q_list,t_list,[v1,v2],[a1,a2])
+# solve_3(q_list,t_list,[v1,v2],[a1,a2])
 
   
+# 4(n+1)=4(n-2)+6+
+# %%
+
+from scipy.interpolate import CubicSpline
+
+import matplotlib.pyplot as plt
+
+x = np.arange(10)
+
+y = np.sin(x)
+
+cs = CubicSpline(x, y)
+
+xs = np.arange(-0.5, 9.6, 0.1)
+
+fig, ax = plt.subplots(figsize=(6.5, 4))
+
+ax.plot(xs, cs(xs), label="S")
+
+ax.set_xlim(-0.5, 9.5)
+
+ax.legend(loc='lower left', ncol=2)
+
+plt.show()
 
 # %%
