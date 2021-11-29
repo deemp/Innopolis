@@ -294,7 +294,7 @@ def eq(a,b):
     return np.abs(a-b) < eps
 
 
-def decompose_transformation(W): 
+def pose_from_t(W): 
     """decompose a rotation matrix into XYZ euler angles"""
     r = R.from_matrix(W[:3,:3]).as_euler('xyz')
     t = W[:3,3]
@@ -488,9 +488,9 @@ def check_IK(q=fk_input_init):
     print(len(qs))
 
 
-def decompose_transformation(W): 
+def pose_from_t(W): 
     """decompose a rotation matrix into translation xyz and XYZ euler angles"""
-    r = R.from_matrix(W[:3,:3]).as_euler('xyz')
+    r = R.from_matrix(W[:3,:3]).as_euler('XYZ')
     t = W[:3,3]
     x = np.zeros(6)
     x[:3] = t
@@ -518,4 +518,4 @@ def t_from_pose(pose):
 def get_ik_from_pose(pose):
     return IK_solve(t_from_pose(pose))
 
-# print(t_from_pose([3,4,3,0,0,0]))
+# print(decompose_transformation(t_from_pose([3,5,3,2,0,0])))
