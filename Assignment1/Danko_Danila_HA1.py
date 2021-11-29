@@ -476,7 +476,7 @@ T = compose_T_num([
     {"T": "R", "axis": "z", "angle": 0.5},
 ])
 
-print(check_transformation_parts(T))
+# print(check_transformation_parts(T))
 
 # check_IK()
 # get_transformation_parts(T)

@@ -4,8 +4,6 @@ from utils import get_fk_solution, n, dim_h, eq, plot_list, decompose_transforma
 
 np.set_printoptions(precision=2, suppress=True)
 
-# dimension of homogeneous matrices
-
 q_final = np.array([2.5,1.8,3.14,4.6,2.1,1.1])
 """final joint configuration"""
 q_initial = np.array([0.,0.,0.,0.,0.,0.])
