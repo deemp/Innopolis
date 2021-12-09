@@ -14,4 +14,5 @@
 * [Lab 8](./Lab-8/Lab-8-soln.ipynb)
 * [Lab 9](./Lab-9/Lab-9-soln.ipynb)
 * [Lab 10](./Lab-10/Lab-10-soln.ipynb)
-* [Lab 13](./Lab-13/Lab-13.ipynb)
+* [Lab 13](./Lab-13/Lab-13-soln.ipynb)
+* [Lab 14](./Lab-14/Lab-14.ipynb)
