@@ -1,6 +1,6 @@
 # F21 Introduction to Machine Learning
 
-* [Lectures](https://drive.google.com/drive/folders/14Ee2LTbYqDpEYDErcJ304UEYnMiZw1od?usp=sharing)
+* [Lectures](https://drive.google.com/drive/folders/1wir7yI7abihIHmvpRWP48X97IBSh-lq5?usp=sharing)
 
 ## Labs
 * [Lab 1](./Lab-1/Lab-1-soln.ipynb)
