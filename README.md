@@ -3,6 +3,7 @@
 * [Lectures](https://drive.google.com/drive/folders/1E6JHoA1fTWveVDAx27Q4qoedlZHA_Ump?usp=sharing)
 
 ## Labs
+Solutions were provided by course instructors
 * [Lab 1](./Lab-1/Lab-1-soln.ipynb)
 * [Lab 2](./Lab-2/Lab-2-soln.ipynb)
 * [Lab 3](./Lab-3/Lab-3-soln.ipynb)
