@@ -6,7 +6,7 @@ from scipy.spatial.transform import Rotation as R
 from sympy.utilities.lambdify import lambdify
 
 
-
+np.set_printoptions(suppress=True)
 
 #############################################
 # Plotting
