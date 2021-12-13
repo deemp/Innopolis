@@ -12,31 +12,7 @@ increment = 0.01
 t = np.arange(t0, tf, increment)
 x0 = [2, 0]
 
-def solve_spring_damper(y0=x0, t=(t0,tf), t_eval=t, b=b, k=k, m=m):
-    """solver for spring-damper system
-
-    ----------
-    ### Parameters
-      `y0` : `np.array`
-          initial values
-      `t` : `np.array`
-          time coordinates
-      `args` : `[float, float, float]`
-          `b` - damping coefficient,
-          `k` - spring stiffness,
-          `m` - mass
-
-    -------
-    ### Returns
-      `np.array`
-          solution to the system
-    """
-    A = np.array([[0, 1], [-k / m, -b / m]])
-
-    def state_space(t, y):
-        return np.dot(A, y)
-
-    return solve_ivp(fun=state_space, y0=y0, t_span=t, t_eval=t_eval)
+np.set_printoptions(suppress=True)
 
 def solve_list(args):
     """solver for list of systems
