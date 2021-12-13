@@ -21,7 +21,7 @@
 * [Slides]()
 
 ## Project setup
-* Use VS Code with Python extension and Jupyter kernel
+* Use VS Code with Python extension and Jupyter kernel or another IDE
 
 * Install [Miniconda](https://conda.io/en/latest/miniconda.html)
 
