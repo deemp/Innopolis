@@ -15,6 +15,8 @@
 
 * [Assignment 3](./Assignment3/description.md)
 
+* [Assignment 4](./Assignment4/description.md)
+
 ## Paper presentation
 * [Paper](https://drive.google.com/file/d/15MOYURm9m_bh1FBhGvIwaftpDl5J70pV/view?usp=sharing)
 * [Notes](https://www.mathcha.io/editor/z8nnJHmwUE7fyghxx6EWKcq0jjpMcZkoL4NHZjLq5l)
