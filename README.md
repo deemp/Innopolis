@@ -2,7 +2,6 @@
 
 ## Notes
 * <img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text">[link](https://www.mathcha.io/editor/e286dsrQtZGIV9I7KwV0SyWJD8eCvDj4NjUlweK7q)
-
 * [Lab notes](./labs.md)
 
 ## Course contents
@@ -10,11 +9,8 @@
 
 ## Assignments
 * [Assignment 1](./Assignment1/description.md)
-
 * [Assignment 2](./Assignment2/description.md)
-
 * [Assignment 3](./Assignment3/description.md)
-
 * [Assignment 4](./Assignment4/description.md)
 
 ## Paper presentation
