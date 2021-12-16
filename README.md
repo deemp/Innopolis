@@ -16,7 +16,7 @@
 ## Paper presentation
 * [Paper](https://drive.google.com/file/d/15MOYURm9m_bh1FBhGvIwaftpDl5J70pV/view?usp=sharing)
 * [Notes](https://www.mathcha.io/editor/z8nnJHmwUE7fyghxx6EWKcq0jjpMcZkoL4NHZjLq5l)
-* [Slides]()
+* [Slides](https://docs.google.com/presentation/d/1aKne6CXvAReBkW9CULnd8wfx1qSNfsuVci6xvlBI_wU/edit?usp=drivesdk)
 
 ## Project setup
 * Use VS Code with Python extension and Jupyter kernel or another IDE
