@@ -3,7 +3,7 @@
 ## Course contents
 * [Materials](https://drive.google.com/drive/u/0/folders/19OD0xInOgmU1n-m1atUINEl8hVBX_fTt)
 * [Notes](https://www.mathcha.io/editor/z8lqpCmwUE7fyghxOzEKeu1pxgkqCMng83KfLJe1D7)<img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text">
-* 
+ 
 ## Assignments
 * [Assignment 1](./Assignment1/description.md)
 * [Assignment 2](./Assignment2/description.md)
