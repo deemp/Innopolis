@@ -21,7 +21,7 @@ def parse_sensor_data(reply):
 import matplotlib.pyplot as plt
 
 try:
-    t = 10
+    t = 3
     n = 1000
     dt = t/n
     a = np.zeros(n)
@@ -33,6 +33,9 @@ try:
     
     t = np.linspace(0,t,n)
     plt.plot(t, a)
+    plt.xlabel("t (s)")
+    plt.ylabel("counts (units)")
+    plt.title(f"sampling time = {dt} ms")
     plt.savefig("practice_1/plots/2.1.png")
     plt.show()
 

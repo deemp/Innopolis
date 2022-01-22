@@ -20,8 +20,10 @@ def parse_sensor_data(reply):
 
 import matplotlib.pyplot as plt
 
+direction = "mixed"
+
 try:
-    t = 5
+    t = 3
     n = 1000
     dt = t/n
     N = 2**14
@@ -29,7 +31,6 @@ try:
     prev = 0
     threshold = 16000
     a = np.zeros(n)
-
     
     for i in range(n):
         encoder.execute()
@@ -56,7 +57,8 @@ try:
     plt.plot(t, a)
     plt.xlabel("t [s]")
     plt.ylabel("$\\theta$ [rad]")
-    plt.savefig("practice_1/plots/2.2.png")
+    plt.title(f"{direction} rotation")
+    plt.savefig(f"practice_1/plots/2.2/{direction}.png")
     plt.show()
 
 except KeyboardInterrupt:
