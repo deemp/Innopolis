@@ -1,4 +1,6 @@
+from time import sleep
 from can import CANDevice, CANSocket
+import numpy as np
 
 can_bus = CANSocket()
 encoder = CANDevice(can_bus = can_bus, device_id = 0x141)
@@ -16,11 +18,25 @@ def parse_sensor_data(reply):
     
     return raw_state
 
+import matplotlib.pyplot as plt
+
 try:
-    while True:
+    t = 10
+    n = 1000
+    dt = t/n
+    a = np.zeros(n)
+    for i in range(n):
         encoder.execute()
         state = parse_sensor_data(encoder.reply)
-        print(f'Encoder data: {state["encoder"]}', end='    \r', flush=True)
+        a[i] = state["encoder"]
+        sleep(dt)
+    
+    t = np.linspace(0,t,n)
+    plt.plot(t, a)
+    plt.savefig("practice_1/plots/2.1.png")
+    plt.show()
 
 except KeyboardInterrupt:
     print('Disabled by interrupt')
+
+
