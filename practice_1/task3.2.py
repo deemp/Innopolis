@@ -28,6 +28,7 @@ dts = [dt, 2 * dt, 3 * dt]
 a = np.zeros((3,n))
 real_speed = np.zeros((3,n))
 
+# milliseconds per count
 count_time = 90
 
 N = 2**14
