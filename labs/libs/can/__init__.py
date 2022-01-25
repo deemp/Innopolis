@@ -26,13 +26,15 @@ class CANSocket:
         self.devices_reply = dict()
         # self.messages = dict()
         self.id = devices_id
+        
+        if serial_port or device == 'can_hacker':
+            self.can_hacker_init(port=serial_port, baud_rate=115200)
+        
         if reset:
             self.can_down()
             self.can_set()
             self.can_up()
 
-        if serial_port or device == 'can_hacker':
-            self.can_hacker_init(port=serial_port, baud_rate=115200)
 
         self.socket = socket.socket(
             socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
@@ -55,6 +57,9 @@ class CANSocket:
 
         os.system(
             f'sudo slcand -o -c -s8 -S {baud_rate} {self.serial_port} {self.interface}')
+        # os.system(
+        #     f'sudo slcand -o -c -s8 {self.serial_port} {self.interface}')
+      
         print(
             f'CAN device is connected on {port} / {baud_rate} and up as interface <{self.interface}> with {self.bitrate} bps')
 

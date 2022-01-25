@@ -1,6 +1,6 @@
-from can import CANDevice, CANSocket
+from libs.can import CANDevice, CANSocket
 
-can_bus = CANSocket()
+can_bus = CANSocket(serial_port='ttyACM1')
 encoder = CANDevice(can_bus = can_bus, device_id = 0x141)
 
 encoder.command = b"\x9C"+ 7 * b"\x00"
@@ -13,7 +13,7 @@ def parse_sensor_data(reply):
     raw_state["current"] = encoder.from_bytes(reply[2:4])
     raw_state["speed"] = encoder.from_bytes(reply[4:6])
     raw_state["encoder"] = encoder.from_bytes(reply[6:])
-    
+    # 
     return raw_state
 
 try:
