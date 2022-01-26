@@ -14,7 +14,7 @@ can_bus = CANSocket(serial_port=serial_device)
 motor = MyActuator(can_bus=can_bus)
 
 # Set the control loop timings
-frequencies = np.array([100, 250, 500])
+frequencies = np.array([100, 250, 500, 700])
 f_n = len(frequencies)
 sampling_time = 1 / frequencies
 
@@ -28,8 +28,8 @@ T = 2
 Ns = T * frequencies
 
 # for each p_gain, we have a plot for d_gains
-p_gain = 120
-d_gain = 25
+p_gain = 180
+d_gain = 10
 
 angles = [np.zeros(N) for N in Ns]
 velocities = [np.zeros(N) for N in Ns]
@@ -71,7 +71,7 @@ try:
                     angles[k][i] = theta
                     velocities[k][i] = dtheta
                     times[k][i] = time
-                else:
+                else: 
                     break
 
                 i += 1
@@ -96,6 +96,7 @@ motor = None
 angle_bound = 0.05
 velocity_bound = 1
 last_n = 10
+
 
 
 def get_settling_time(x, ts, for_angle=True):
@@ -152,6 +153,8 @@ ax0.set_ylabel("$\\theta$ [$rad$]")
 ax1.set_xlabel("t [s]")
 ax1.set_ylabel("$\\dot{\\theta}$ [$\\frac{rad}{s}$]")
 
+
+
 for i in range(f_n):
     add_plot(
         ax=ax0,
@@ -182,5 +185,5 @@ fig.suptitle(
 
 fig.tight_layout(pad=3.0)
 
-plt.savefig("./plots/2.2.png")
+plt.savefig("./plots/3.1.png")
 plt.show()
