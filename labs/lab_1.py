@@ -1,6 +1,6 @@
 from libs.can import CANDevice, CANSocket
 
-can_bus = CANSocket(serial_port='ttyACM1')
+can_bus = CANSocket(serial_port='ttyACM0')
 encoder = CANDevice(can_bus = can_bus, device_id = 0x141)
 
 encoder.command = b"\x9C"+ 7 * b"\x00"

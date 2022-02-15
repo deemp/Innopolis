@@ -328,7 +328,7 @@ class MyActuator(CANDevice):
             self.parse_state(self.reply)
 
     def set_torque(self, torque, torque_limit=None):
-        pass
+        self.set_current(torque/self.torque_constant)
 
     def set_speed(self, speed, accel_limit=None, send = True):
         # TODO:
