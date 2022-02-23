@@ -27,74 +27,70 @@ pendulum.torque_constant = 1e-3
 frequency = 500
 sampling_time = 1 / frequency
 
-theta_offset = np.pi / 2
+theta_desired = np.pi / 2
 dtheta_desired = 0
-p_gain = 0.01
-d_gain = 0.02
-i_max = 0.2
-i_max = 0.2
-i_gain = 0.2
+p_gain = 0.3
+d_gain = 0.03
+i_max = 0.1
+i_gain = 0.4
 
-seconds = 3
+seconds = 4
 N = seconds * frequency
 
-ps = [0.1, 0.3]
-ds = [0.01, 0.03]
+thetas = np.zeros((2,N))
 
-thetas = np.zeros((len(ps), len(ds), N))
+def get_control(position_error, velocity_error, i_term=0):
+    return -(p_gain * position_error + d_gain * velocity_error + i_gain * i_term)
 
 try:
     # find the global time before intering control loop
     # initial_time = perf_counter()
-    for i, p_gain in enumerate(ps):
-        for j, d_gain in enumerate(ds):
-            iterations = 0
-            initial_time = perf_counter()
-            i_term = 0.
-            last_execution = 0
-            control = 0
-            theta_current = pendulum.state["angle"]
-            pendulum.set_zero()
-            theta_desired = theta_current + theta_offset
-            while True:
-                time = perf_counter() - initial_time  # get actual time in secs
-                # print("ok")
-                # break
+    for i in range(2):
+        j = 0
+        initial_time = perf_counter()
+        i_term = 0.
+        last_execution = 0
+        control = 0
+        pendulum.set_torque(0.001)
+        theta_home = pendulum.state["angle"]
+        while True:
+            time = perf_counter() - initial_time  # get actual time in secs
+            # print("ok")
+            # break
 
-                # /////////////////////////
-                # Get and parse motor state
-                # /////////////////////////
+            # /////////////////////////
+            # Get and parse motor state
+            # /////////////////////////
+
+            # ///////////////////////////////////////////
+            # Update the control only on specific timings
+            # ///////////////////////////////////////////
+            if (time - last_execution) >= sampling_time:
+                j += 1
+                if j >= N:
+                    break
+                
+                last_execution = time
+                
                 state = pendulum.state
-                theta = state["angle"]
+                theta = state["angle"] - theta_home
                 dtheta = state["speed"]
                 torque = state["torque"]
 
-                # ///////////////////////////////////////////
-                # Update the control only on specific timings
-                # ///////////////////////////////////////////
-                if (time - last_execution) >= sampling_time:
-                    iterations += 1
-                    if iterations >= N:
-                        break
-                    
-                    thetas[i,j,iterations] = theta - theta_current
+                thetas[i,j] = theta
 
-                    last_execution = time
-                    # YOUR CONTROLLER GOES HERE
+                # YOUR CONTROLLER GOES HERE
 
-                    position_error = theta - theta_desired
-                    velocity_error = dtheta - dtheta_desired
-                    i_term = i_term + position_error * sampling_time
-                    i_term = min(i_max, i_term)
+                position_error = theta - theta_desired
+                velocity_error = dtheta - dtheta_desired
+                i_term += position_error * sampling_time
+                i_term = min(i_max, i_term)
+                
+                control = get_control(position_error, velocity_error, 0 if i == 0 else i_term)
 
-                    control = -(
-                        p_gain * position_error + d_gain * velocity_error + i_gain * i_term
-                    )
-                    # control = 0.2
+                print(f"Motor angle data: {round(theta, 5)}", end="    \r", flush=True)
 
-                    print(f"Motor angle data: {round(theta, 5)}", end="    \r", flush=True)
-
-                pendulum.set_torque(control)
+            pendulum.set_torque(control)
     
 except KeyboardInterrupt:
     print("Disabled by interrupt")
@@ -104,21 +100,25 @@ finally:
     for i in range(100):
         pendulum.set_torque(0)
 
-print ("not ok")
+# print ("not ok")
 
 import matplotlib.pyplot as plt
 
 
 ts = np.linspace(0, time, N)
 
-for i, p in enumerate(ps):
-    for j,d in enumerate(ds):
-        plt.plot(ts, thetas[i,j], label=f'p_gain: {p}, d_gain: {d}')
+fig, ax = plt.subplots(1,1,figsize=(10,7))
 
-plt.grid()
-plt.plot(ts, np.full(N, theta_offset), label=f'$\\theta_{{desired}}$', linestyle="-.", linewidth=3)
-plt.title(f"$\\theta_{{desired}}: {theta_offset:.2f}$")
-plt.legend()
+labels = ["PD", "PID"]
+
+for i,label in enumerate(labels):
+    ax.plot(ts, thetas[i], label=f'{label}, SSE: {(thetas[i,-1]-theta_desired):.4f}')
+
+ax.grid()
+ax.plot(ts, np.full(N, theta_desired), label=f'$\\theta_{{desired}}$', linestyle="-.", linewidth=3)
+ax.set_title(f"$\\theta_{{desired}}: {theta_desired:.2f}$, p_gain: {p_gain}, d_gain: {d_gain}")
+ax.legend()
+plt.tight_layout()
 plt.savefig("./images/task1.2.png")
 plt.show()
 

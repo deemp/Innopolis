@@ -53,41 +53,40 @@ try:
             last_execution = 0
             control = 0
             pendulum.set_torque(0.0001)
-            theta_current = pendulum.state["angle"]
-            theta_desired_current = theta_current + theta_desired
+            theta_home = pendulum.state["angle"]
             while True:
                 time = perf_counter() - initial_time  # get actual time in secs
                 # print("ok")
                 # break
 
-                # /////////////////////////
-                # Get and parse motor state
-                # /////////////////////////
-                state = pendulum.state
-                theta = state["angle"]
-                dtheta = state["speed"]
-                torque = state["torque"]
 
                 # ///////////////////////////////////////////
                 # Update the control only on specific timings
                 # ///////////////////////////////////////////
                 if (time - last_execution) >= sampling_time:
+                    # /////////////////////////
+                    # Get and parse motor state
+                    # /////////////////////////
+                    state = pendulum.state
+                    theta = state["angle"] - theta_home
+                    dtheta = state["speed"]
+                    # torque = state["torque"]
                     iterations += 1
                     if iterations >= N:
                         break
                     
-                    thetas[i,j,iterations] = theta - theta_current
+                    thetas[i,j,iterations] = theta
 
                     last_execution = time
                     # YOUR CONTROLLER GOES HERE
 
-                    position_error = theta - theta_desired_current
+                    position_error = theta - theta_desired
                     velocity_error = dtheta - dtheta_desired
-                    # i_term = i_term + position_error * sampling_time
-                    # i_term = min(i_max, i_term)
-
+                    
+                    # grav = 0.14 * 9.81 * 0.1 * np.sin(theta)
                     control = -(
                         p_gain * position_error + d_gain * velocity_error 
+                        # + grav
                         # + i_gain * i_term
                     )
                     # control = 0.2
@@ -104,7 +103,7 @@ finally:
     for i in range(100):
         pendulum.set_torque(0)
 
-print ("not ok")
+# print ("not ok")
 
 import matplotlib.pyplot as plt
 
@@ -115,7 +114,7 @@ fig, ax = plt.subplots(1,1,figsize=(10,7))
 
 for i, p in enumerate(ps):
     for j,d in enumerate(ds):
-        ax.plot(ts, thetas[i,j], label=f'p_gain: {p}, d_gain: {d}, SSE: {thetas[i,j,-1]-theta_desired:.2f}')
+        ax.plot(ts, thetas[i,j], label=f'p_gain: {p}, d_gain: {d}, SSE: {thetas[i,j,-1]-theta_desired:.4f}')
 
 ax.grid()
 ax.plot(ts, np.full(N, theta_desired), label=f'$\\theta_{{desired}}$', linestyle="-.", linewidth=3)
