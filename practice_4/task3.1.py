@@ -52,9 +52,9 @@ l = 0.1
 # PD+/PID
 modes = 2
 
-is_mass_attached = True
+is_load_attached = True
 
-if not is_mass_attached:
+if not is_load_attached:
     m = 0.04
 
 thetas = np.zeros((modes,len(theta_desireds),N))
@@ -102,14 +102,22 @@ def go_home_pid(theta_home=theta_home):
     for j in range(100):
         pendulum.set_torque(0)
 
-txt = "attach mass to" if is_mass_attached else "detach mass from"
-input(f"\r\nPlease, {txt} the pendulum and home it vertically down. Then press 'Enter'\r\n")
+while True:
+    t = input("Is the load attached to the pendulum? [Y/N]")
+    if t == "Y":
+        is_load_attached = True
+        break
+    elif t == "N":
+        is_load_attached = False
+        break
+
+input(f"\r\nPlease, direct the pendulum vertically down for homing. Then press 'Enter'\r\n")
 
 labels = ["PD+", "PID"]
 
 try:
     for mode in range(modes):
-        print(f"\r\nStarting experiments for {labels[mode]} controller\r\n")
+        print(f"\r\n\r\n\r\nStarting experiments for {labels[mode]} controller\r\n")
         for i, theta_desired in enumerate(theta_desireds):
             print("\r\n\r\nHoming...\r")
             go_home_pid(theta_home)
@@ -178,10 +186,10 @@ for mode in range(modes):
         ax[mode].set_ylabel("$\\theta$ [rad]")
         ax[mode].legend(loc="best")
 
-txt = "attached" if is_mass_attached else "detached"
+txt = "attached" if is_load_attached else "detached"
 fig.suptitle(f"Comparison of PD+ and PID controllers with mass {txt}\np_gain={p_gain:.3f}, d_gain={d_gain:.3f}", fontsize=16)
 
 plt.tight_layout()
-name = "+" if is_mass_attached else "-"
+name = "+" if is_load_attached else "-"
 plt.savefig(f"./images/task3.1{name}mass.png")
 plt.show()
