@@ -169,8 +169,8 @@ try:
 
             a_error = manipulator.state[:2] - ad
             da_error = manipulator.state[2:] - dad
-            # grav = get_g(theta_1, theta_2)
-            control = -(p_gains * a_error + d_gains * da_error)
+            grav = get_g(theta_1, theta_2)
+            control = -(p_gains * a_error + d_gains * da_error) + grav
             # control = zeros(2)
 
             manipulator.control = control
@@ -246,10 +246,10 @@ finally:
     ax[1].legend()
 
     fig.suptitle(
-        f"PD control with P gains = {p_gains[0]:.3f}, {p_gains[1]:.3f}; D gains = {d_gains[0]:.3f}, {d_gains[1]:.3f}",
+        f"PD+ control with P gains = {p_gains[0]:.3f}, {p_gains[1]:.3f}; D gains = {d_gains[0]:.3f}, {d_gains[1]:.3f}",
         fontsize=16,
     )
 
     plt.tight_layout()
-    plt.savefig("./images/task2.png")
+    plt.savefig("./images/task3.png")
     plt.show()

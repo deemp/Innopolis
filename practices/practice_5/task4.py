@@ -31,6 +31,7 @@ m1, m2 = m
 J1, J2 = J
 
 
+
 def D(a1, a2):
 
     return array(
@@ -86,40 +87,55 @@ def sysode(x, t, control, params=[]):
 T = 1
 N = 2000
 
+frequencies = np.array([5,8])
+amplitudes = np.array([5,8])
+
+freq_n = len(frequencies)
+amp_n = len(amplitudes)
+
 def simulator(system):
     try:
-        last_execution = 0
-        initial_time = perf_counter()
-        iteration = 0
-        data = np.zeros((4,N))
-        while True:
-            # ///////////////////////////////////////////
-            time = perf_counter() - initial_time  # get actual time in secs
-            dt = time - last_execution
-            if dt * sim_ratio >= sampling_time:
-                if iteration >= N:
-                    system.T = time
-                    break
-                
-                last_execution = time
-                control = system.control
-                data[:,iteration] = system.state
-                # DO SIMULATION
-                # IMPLEMENT YOUR SIMULATOR HERE
-                system.state = system.state + sysode(system.state, time, control) * dt
+        arr = np.zeros((freq_n, amp_n, 2, N))
+        Ts = np.zeros((freq_n, amp_n))
+        for i,freq in enumerate(frequencies):
+            for j,amp in enumerate(amplitudes):
+                last_execution = 0
+                initial_time = perf_counter()
+                iteration = 0
+                while True:
+                    # ///////////////////////////////////////////
+                    time = perf_counter() - initial_time  # get actual time in secs
+                    dt = time - last_execution
+                    if dt * sim_ratio >= sampling_time:
+                        # if time >= T:
+                        # break
+                        if iteration >= N:
+                            Ts[i,j] = 
+                            break
 
-                # print(
-                #     f"iteration: {iteration}, State: {system.state}",
-                #     end="    \r",
-                #     flush=True,
-                # )
-                iteration += 1
+                        last_execution = time
+                        control = system.control
+                        arr[i,j,:,iteration] = system.state[:2]
+                        # DO SIMULATION
+                        # IMPLEMENT YOUR SIMULATOR HERE
+                        system.state = system.state + sysode(system.state, time, control) * dt
+
+                        # print(
+                        #     f"iteration: {iteration}, State: {system.state}",
+                        #     end="    \r",
+                        #     flush=True,
+                        # )
+                        iteration += 1
+                
+                system.state = array([0, 0, 0, 0])
+                system.control = zeros(2)
+            
 
     except KeyboardInterrupt:
         print("\nSimulator is terminated")
-    
+
     finally:
-        system.array = data
+        system.array = arr
     
 
 # Set the control loop timings
@@ -133,7 +149,7 @@ manipulator = Manager().Namespace()
 manipulator.state = array([0, 0, 0, 0])
 manipulator.control = zeros(2)
 manipulator.array = np.array([])
-manipulator.T = 1
+manipulator.Ts = np.zeros(4)
 
 simulator_proc = Process(target=simulator, args=(manipulator,))
 simulator_proc.start()
@@ -142,15 +158,18 @@ simulator_proc.start()
 ad = np.array([pi / 3, pi / 6])
 dad = np.array([0, 0])
 
-p_gains = np.array([200,200])
+p_gains = np.array([300, 300])
 d_gains = np.array([30, 30])
 
+
+data = zeros((4, N))
 try:
     last_execution = 0
     control = 0
     # find the global time before intering control loop
     initial_time = perf_counter()
     iteration = 0
+    n_max = freq_n * amp_n * N
     while True:
         # break
         time = perf_counter() - initial_time  # get actual time in secs
@@ -161,16 +180,17 @@ try:
         if (time - last_execution) >= sampling_time:
             # if time >= T:
             #     break
-            if iteration >= N:
+            if iteration >= n_max:
                 break
             theta_1, theta_2, dtheta_1, dtheta_2 = manipulator.state
+            data[:, iteration] = manipulator.state
 
             last_execution = time
 
             a_error = manipulator.state[:2] - ad
             da_error = manipulator.state[2:] - dad
-            # grav = get_g(theta_1, theta_2)
-            control = -(p_gains * a_error + d_gains * da_error)
+            grav = get_g(theta_1, theta_2)
+            control = -(p_gains * a_error + d_gains * da_error + grav)
             # control = zeros(2)
 
             manipulator.control = control
@@ -178,6 +198,7 @@ try:
             iteration += 1
 
         # print(f'State: {manipulator.state}', end='    \r', flush=True)
+        # print(f'State: {manipulator.state}', end='    \r', flush=False)
 
 
 except KeyboardInterrupt:
@@ -190,9 +211,7 @@ except Exception as e:
 finally:
     sleep(0.5)
     simulator_proc.join()
-    
-    arr = manipulator.array
-    T = manipulator.T * sim_ratio
+    # arr = manipulator.array
 
     import matplotlib.pyplot as plt
 
@@ -201,8 +220,8 @@ finally:
     ts = np.linspace(0, T, N)
     # theta_desireds = np.full(N, theta_desired)
 
-    ax[0].plot(ts, arr[0], label=f"$\\alpha_{{1}}$")
-    ax[0].plot(ts, arr[1], label=f"$\\alpha_{{2}}$")
+    ax[0].plot(ts, data[0, :], label=f"$\\alpha_{{1}}$")
+    ax[0].plot(ts, data[1, :], label=f"$\\alpha_{{2}}$")
     ax[0].grid()
     ax[0].set_title(f"Joint angles")
     ax[0].set_xlabel("time [s]")
@@ -223,8 +242,8 @@ finally:
     )
     ax[0].legend()
 
-    ax[1].plot(ts, arr[2], label=f"$\\dot{{\\alpha}}_{{1}}$")
-    ax[1].plot(ts, arr[3], label=f"$\\dot{{\\alpha}}_{{2}}$")
+    ax[1].plot(ts, data[2, :], label=f"$\\dot{{\\alpha}}_{{1}}$")
+    ax[1].plot(ts, data[3, :], label=f"$\\dot{{\\alpha}}_{{2}}$")
     ax[1].grid()
     ax[1].set_title(f"Joint velocities")
     ax[1].set_xlabel("time [s]")
@@ -246,10 +265,10 @@ finally:
     ax[1].legend()
 
     fig.suptitle(
-        f"PD control with P gains = {p_gains[0]:.3f}, {p_gains[1]:.3f}; D gains = {d_gains[0]:.3f}, {d_gains[1]:.3f}",
+        f"PD+ control with P gains = {p_gains[0]:.3f}, {p_gains[1]:.3f}; D gains = {d_gains[0]:.3f}, {d_gains[1]:.3f}",
         fontsize=16,
     )
 
     plt.tight_layout()
-    plt.savefig("./images/task2.png")
+    plt.savefig("./images/task3.png")
     plt.show()

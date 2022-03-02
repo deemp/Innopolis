@@ -78,7 +78,6 @@ def sysode(x, t, control, params=[]):
 
 T = 1
 N = 2000
-arr = np.zeros((4, N))
 
 
 def simulator(system):
@@ -86,6 +85,8 @@ def simulator(system):
         last_execution = 0
         initial_time = perf_counter()
         iteration = 0
+        system.T = 0
+        arr = np.zeros((4, N))
         while True:
             # ///////////////////////////////////////////
             time = perf_counter() - initial_time  # get actual time in secs
@@ -94,24 +95,28 @@ def simulator(system):
                 # if time >= T:
                 # break
                 if iteration >= N:
+                    system.T = time
                     break
 
                 last_execution = time
                 control = system.control
 
+                arr[:,iteration] = system.state
                 # DO SIMULATION
                 # IMPLEMENT YOUR SIMULATOR HERE
                 system.state = system.state + sysode(system.state, time, control) * dt
 
-                print(
-                    f"iteration: {iteration}, State: {system.state}",
-                    end="    \r",
-                    flush=True,
-                )
+                # print(
+                #     f"iteration: {iteration}, State: {system.state}",
+                #     end="    \r",
+                #     flush=True,
+                # )
                 iteration += 1
 
     except KeyboardInterrupt:
         print("\nSimulator is terminated")
+    finally:
+        system.array = arr
 
 
 # Set the control loop timings
@@ -124,7 +129,8 @@ manipulator = Manager().Namespace()
 # SET INITIAL STATE
 manipulator.state = array([0, 0, 0, 0])
 manipulator.control = zeros(2)
-manipulator.array = arr
+manipulator.array = np.array([])
+manipulator.T = 1
 
 simulator_proc = Process(target=simulator, args=(manipulator,))
 simulator_proc.start()
@@ -172,7 +178,8 @@ except Exception as e:
 finally:
     sleep(0.5)
     simulator_proc.join()
-    # arr = manipulator.array
+    arr = manipulator.array
+    T = manipulator.T * sim_ratio
 
     import matplotlib.pyplot as plt
 
@@ -181,16 +188,16 @@ finally:
     ts = np.linspace(0, T, N)
     # theta_desireds = np.full(N, theta_desired)
 
-    ax[0].plot(ts, data[0, :], label=f"$\\alpha_{{1}}$")
-    ax[0].plot(ts, data[1, :], label=f"$\\alpha_{{2}}$")
+    ax[0].plot(ts, arr[0, :], label=f"$\\alpha_{{1}}$")
+    ax[0].plot(ts, arr[1, :], label=f"$\\alpha_{{2}}$")
     ax[0].grid()
     ax[0].set_title(f"Joint angles")
     ax[0].set_xlabel("time [s]")
     ax[0].set_ylabel("$\\alpha$ [rad]")
     ax[0].legend()
 
-    ax[1].plot(ts, data[2, :], label=f"$\\dot{{\\alpha}}_{{1}}$")
-    ax[1].plot(ts, data[3, :], label=f"$\\dot{{\\alpha}}_{{2}}$")
+    ax[1].plot(ts, arr[2, :], label=f"$\\dot{{\\alpha}}_{{1}}$")
+    ax[1].plot(ts, arr[3, :], label=f"$\\dot{{\\alpha}}_{{2}}$")
     ax[1].grid()
     ax[1].set_title(f"Joint velocities")
     ax[1].set_xlabel("time [s]")
