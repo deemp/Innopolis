@@ -24,3 +24,7 @@ try:
 
 except KeyboardInterrupt:
     print('Disabled by interrupt')
+except Exception as e:
+    print(f'\n!!!! EXCEPTION !!!!\n {e} \n!!!! EXCEPTION !!!!\n')
+finally:
+    pass

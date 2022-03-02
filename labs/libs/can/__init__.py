@@ -58,6 +58,9 @@ class CANSocket:
         os.system(
             f'sudo slcand -o -c -s8 -S {baud_rate} {self.serial_port} {self.interface}')
         # os.system(
+        #     f'sudo slcand -o -c -s8 -S {baud_rate} {self.serial_port} {self.interface}')
+
+        # os.system(
         #     f'sudo slcand -o -c -s8 {self.serial_port} {self.interface}')
       
         print(
@@ -66,6 +69,7 @@ class CANSocket:
     def can_set(self):
         os.system(
             f'sudo ip link set {self.interface} type can bitrate {self.bitrate}')
+            
         print(
             f'CAN interface <{self.interface}> is setted on {self.bitrate} bps')
 
@@ -75,7 +79,7 @@ class CANSocket:
 
     def can_up(self):
         os.system(f'sudo ifconfig {self.interface} up')
-        # os.system(f'sudo ifconfig {self.interface} txqueuelen 65536')
+        os.system(f'sudo ifconfig {self.interface} txqueuelen 65536')
         print(f'CAN interface <{self.interface}> is up')
 
     def can_reset(self):
