@@ -98,7 +98,7 @@ def simulator(system):
             dt = time - last_execution
             if dt * sim_ratio >= sampling_time:
                 if iteration >= N:
-                    system.T = time
+                    system.T = time * sim_ratio
                     break
                 
                 last_execution = time
@@ -192,7 +192,7 @@ finally:
     simulator_proc.join()
     
     arr = manipulator.array
-    T = manipulator.T * sim_ratio
+    T = manipulator.T
 
     import matplotlib.pyplot as plt
 
