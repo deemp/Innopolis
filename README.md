@@ -13,3 +13,6 @@
 * Lab 4
     * [code](./practices/practice_4)
     * [report](https://docs.google.com/document/d/1avenEbYLLiIzduOCMjHf9Y_taCw-WhXEPN5QVuV1dc0/edit?usp=sharing)
+* Lab 5
+    * [code](./practices/practice_5)
+    * [report](https://docs.google.com/document/d/1YvlcqCy4D3ovNS0rhFpzHV76RHek3i10mae8lOZD4Jg/edit#heading=h.3k3j9e4hiacr)
