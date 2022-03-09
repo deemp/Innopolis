@@ -192,7 +192,7 @@ finally:
     ax[0].plot(ts, arr[1, :], label=f"$\\alpha_{{2}}$")
     ax[0].grid()
     ax[0].set_title(f"Joint angles")
-    ax[0].set_xlabel("time [s]")
+    ax[0].set_xlabel("simulated time [s]")
     ax[0].set_ylabel("$\\alpha$ [rad]")
     ax[0].legend()
 
@@ -200,7 +200,7 @@ finally:
     ax[1].plot(ts, arr[3, :], label=f"$\\dot{{\\alpha}}_{{2}}$")
     ax[1].grid()
     ax[1].set_title(f"Joint velocities")
-    ax[1].set_xlabel("time [s]")
+    ax[1].set_xlabel("simulated time [s]")
     ax[1].set_ylabel("$\\dot{\\alpha}$ [$\\frac{rad}{s}$]")
     ax[1].legend()
 
