@@ -5,3 +5,4 @@
 
 ## HW1
 * [Code](./HWs/HW1.ipynb)
+* [Code](./HWs/HW2.ipynb)
