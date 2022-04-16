@@ -1,7 +1,10 @@
 # S22. Sensors and Sensing
 
 ## Home Assignments
-* [HA 1](./HA1/HA1.ipynb)
+
+### HA 1
+* [code](./HA1/HA1.ipynb)
+* [report](./HA1/HA1.pdf) / <a href="https://www.mathcha.io/editor/kx1P4c9liqOH2xHD2wmxjFLnPqEyuv6XJzOUVdEoxP"><img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text"></a>
 
 ## Project setup
 * Use VS Code with Python extension and Jupyter kernel or any other IDE
