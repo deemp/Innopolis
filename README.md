@@ -27,6 +27,10 @@ conda env create -f env.yml
 conda activate ss_env
 ```
 
+* Open the desired `.ipynb` and click `Run All` at the top.
+
+* Select the `ss_env` in the list of environments and wait until all cells finish running.
+
 * If you no more need this environment, [remove it](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#removing-an-environment).
 ```sh
 conda deactivate
