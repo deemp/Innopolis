@@ -9,6 +9,6 @@
 ## HW2
 * [Code](./HWs/HW2.ipynb)
 
-## HW2
+## HW3
 * [Code](./HW3/HW3.ipynb)
 * [Report](./HW3/hw3.pdf)
