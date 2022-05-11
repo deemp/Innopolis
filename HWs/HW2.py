@@ -194,7 +194,7 @@ def classify(x):
 
 
 def g():
-    x = sp.symbols(r'x_1, x_2') 
+    x = sp.symbols(r'x_1, x_2')
     f_sym = sp.Matrix([f(x)]).T
     # equlibriums = sp.solve(f_sym, x)
     # jacobian = f_sym.jacobian(x)
