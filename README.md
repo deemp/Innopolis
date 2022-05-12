@@ -6,6 +6,13 @@
 * [code](./HA1/HA1.ipynb)
 * [report](./HA1/HA1.pdf) / <a href="https://www.mathcha.io/editor/kx1P4c9liqOH2xHD2wmxjFLnPqEyuv6XJzOUVdEoxP"><img src="https://cdn.mathcha.io/resources/logo.png" width="20" title="hover text"></a>
 
+### HA 2
+* [code](./HA2/HA2.ipynb)
+
+### HA 3
+* [Task 1](https://colab.research.google.com/drive/1Yzzi9URTCSq6pgpxB4bCVNvxkoMgf2q4?usp=sharing)
+* [Task 2](https://colab.research.google.com/drive/1CSR42gmemdelALNREXc-Y3_cyUWUgu98?usp=sharing)
+
 ## Project setup
 * Clone the repository
 ```sh
