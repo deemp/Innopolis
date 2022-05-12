@@ -10,7 +10,7 @@
 * [code](./HA2/HA2.ipynb)
 
 ### HA 3
-* [Task 1](https://colab.research.google.com/drive/1Yzzi9URTCSq6pgpxB4bCVNvxkoMgf2q4?usp=sharing)
+* [Task 1](https://colab.research.google.com/drive/1Yzzi9URTCSq6pgpxB4bCVNvxkoMgf2q4?usp=sharing) 
 * [Task 2](https://colab.research.google.com/drive/1CSR42gmemdelALNREXc-Y3_cyUWUgu98?usp=sharing)
 
 ## Project setup
