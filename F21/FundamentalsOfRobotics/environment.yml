@@ -1,0 +1,9 @@
+name: for_env
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - scipy
+  - matplotlib
+  - numpy
+  - sympy
