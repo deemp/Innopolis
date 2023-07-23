@@ -1,0 +1,10 @@
+name: meh_env
+channels:
+  - defaults
+dependencies:
+  - scipy
+  - numpy
+  - matplotlib
+  - jupyter
+  - notebook
+prefix: /home/user/miniconda3/envs/meh_env
